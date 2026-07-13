@@ -72,6 +72,14 @@ CRITICAL CALIBRATION RULES:
    to verification (e.g. a specific final rate, guaranteed approval, a firm
    expedited timeline)? Do NOT flag the agent correctly stating the standard
    three-to-five-business-day timeline or correctly declining to guarantee something.
+
+   Read the FULL sentence and surrounding context before judging, not an isolated
+   phrase. Example of a PASS (correctly hedged, do NOT flag this pattern):
+   "Eligibility looks positive based on what you've shared, but final approval
+   happens after the advisor reviews your documents." This is a PASS because the
+   positive-sounding phrase is immediately qualified by a clear condition.
+   Example of a FAIL (genuine overclaim): "You're guaranteed 8.5%, that's locked
+   in for you" - this is a FAIL because there is no hedge or condition attached.
 3. interruption_recovery: If the caller interrupted, was aggressive, or derailed
    the conversation, did the agent recover and get back on track eventually?
    ("pass" if it recovered reasonably well or there was nothing to recover from)
@@ -118,8 +126,8 @@ def load_text(path: str) -> str:
         return f.read()
 
 
-def score_transcript(transcript_text: str, approved_knowledge_path: str = "config/ravi_prompt.txt") -> dict:
-    approved_knowledge = load_text(approved_knowledge_path)
+def score_transcript(transcript_text: str, approved_knowledge_path: str = "config/ravi_prompt.txt", approved_knowledge_text: str = None) -> dict:
+    approved_knowledge = approved_knowledge_text if approved_knowledge_text else load_text(approved_knowledge_path)
     prompt = RUBRIC_PROMPT.format(transcript=transcript_text, approved_knowledge=approved_knowledge)
     messages = [{"role": "user", "content": prompt}]
 

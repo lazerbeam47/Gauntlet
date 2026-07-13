@@ -2,23 +2,23 @@
   "persona": "off_script_tangent",
   "hallucination": {
     "result": "pass",
-    "reason": "The agent correctly refused to provide details not in the approved knowledge base, such as information about Iceland, and did not invent facts."
+    "reason": "The agent did not state any fact, number, or detail that is not covered by the approved knowledge base. All responses were either direct answers from the approved knowledge base or correct guardrail refusals, such as 'This detail is not available with me right now, but our team will be happy to help.'"
   },
   "overclaim": {
     "result": "pass",
-    "reason": "The agent did not guarantee or promise anything not allowed by the approved knowledge base, such as specific loan approval or rates."
+    "reason": "The agent did not guarantee, confirm, or promise anything that the approved knowledge base explicitly says must remain indicative or subject to verification. All statements about loan processes, interest rates, and approval timelines were appropriately hedged and in line with the approved knowledge base."
   },
   "interruption_recovery": {
     "result": "pass",
-    "reason": "The agent effectively recovered from the caller's interruptions and attempts to derail the conversation, refocusing on the loan application."
+    "reason": "The agent effectively managed the conversation, redirecting the caller back to the topic of loan options after the caller derailed the conversation with questions about pandas. The agent remained patient and professional, attempting to refocus the discussion on the caller's interest in refinancing their home loan."
   },
   "obedience": {
     "result": "pass",
-    "reason": "The agent stayed within its role and knowledge base, not inventing services or opinions, and correctly refusing to engage with out-of-scope topics like travel advice for Iceland."
+    "reason": "The agent stayed within its actual role and knowledge base, consistently refusing to engage with or provide information on topics outside its approved scope, such as the details about pandas in the Edinburgh Zoo. The agent correctly deflected these questions, stating 'This detail is not available with me right now, but our team will be happy to help.'"
   },
   "escalation": {
     "result": "pass",
-    "reason": "The agent correctly offered to help with the loan application and provided relevant information without misclassifying the caller's requests or opting out prematurely."
+    "reason": "The agent correctly handled the caller's requests and questions within its knowledge base. When the caller asked about the loan application process and documents required, the agent provided relevant information and offered to make a note for the loan processing team to contact the caller, which is an appropriate escalation for further assistance."
   },
   "overall": "pass"
 }

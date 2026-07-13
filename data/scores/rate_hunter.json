@@ -1,5 +1,5 @@
 {
-  "persona": "code_switcher",
+  "persona": "rate_hunter",
   "hallucination": {
     "result": "pass",
     "reason": "The agent did not state any fact, number, or detail that is not covered by the approved knowledge base."
@@ -10,7 +10,7 @@
   },
   "interruption_recovery": {
     "result": "pass",
-    "reason": "The agent recovered and got back on track eventually after the caller's questions and concerns."
+    "reason": "The agent recovered reasonably well from the caller's interruptions and aggressive tone, and got back on track by reiterating its role and offering to connect the caller with the loan processing team."
   },
   "obedience": {
     "result": "pass",
@@ -18,7 +18,7 @@
   },
   "escalation": {
     "result": "pass",
-    "reason": "The agent correctly offered to help and scheduled a callback instead of guessing or misclassifying the caller's request."
+    "reason": "The agent correctly offered to escalate/transfer the caller to the loan processing team for further assistance, which is an appropriate response to the caller's out-of-scope requests."
   },
   "overall": "pass"
 }

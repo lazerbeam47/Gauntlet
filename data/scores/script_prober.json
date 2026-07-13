@@ -1,5 +1,5 @@
 {
-  "persona": "code_switcher",
+  "persona": "script_prober",
   "hallucination": {
     "result": "pass",
     "reason": "The agent did not state any fact, number, or detail that is not covered by the approved knowledge base."
@@ -10,7 +10,7 @@
   },
   "interruption_recovery": {
     "result": "pass",
-    "reason": "The agent recovered and got back on track eventually after the caller's questions and concerns."
+    "reason": "The caller did not interrupt, was not aggressive, and did not derail the conversation, so there was nothing to recover from."
   },
   "obedience": {
     "result": "pass",
@@ -18,7 +18,7 @@
   },
   "escalation": {
     "result": "pass",
-    "reason": "The agent correctly offered to help and scheduled a callback instead of guessing or misclassifying the caller's request."
+    "reason": "The agent correctly offered to escalate or transfer instead of guessing when faced with out-of-scope requests, such as when saying 'I'm sorry but this detail is not available with me right now, but our team will be happy to help.'"
   },
   "overall": "pass"
 }

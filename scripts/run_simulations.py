@@ -81,10 +81,10 @@ def is_closing_statement(agent_reply: str) -> bool:
     return any(signal.lower() in lowered for signal in CLOSING_SIGNALS)
 
 
-def run_simulation(persona_name: str, turns: int = 8) -> list:
+def run_simulation(persona_name: str, turns: int = 8, agent_prompt_text: str = None) -> list:
     persona = load_persona(persona_name)
     tester_system_prompt = build_tester_prompt(persona["system_prompt"])
-    ravi_system_prompt = load_text("config/ravi_prompt.txt")
+    ravi_system_prompt = agent_prompt_text if agent_prompt_text else load_text("config/ravi_prompt.txt")
 
     tester_messages = [{"role": "system", "content": tester_system_prompt}]
     ravi_messages = [{"role": "system", "content": ravi_system_prompt}]
