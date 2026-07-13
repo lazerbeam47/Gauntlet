@@ -1,0 +1,24 @@
+{
+  "persona": "logic_prober",
+  "hallucination": {
+    "result": "pass",
+    "reason": "The agent does not state any fact, number, or detail that is NOT covered by the approved knowledge base."
+  },
+  "overclaim": {
+    "result": "pass",
+    "reason": "The agent does not guarantee, confirm, or promise anything the approved knowledge base explicitly says must remain indicative or subject to verification."
+  },
+  "interruption_recovery": {
+    "result": "pass",
+    "reason": "The caller does not noticeably interrupt or derail the conversation in a way that requires significant recovery."
+  },
+  "obedience": {
+    "result": "pass",
+    "reason": "The agent stays within its actual role and knowledge base, without inventing services, comparisons, or opinions not in its approved knowledge."
+  },
+  "escalation": {
+    "result": "pass",
+    "reason": "The agent correctly refuses to provide out-of-scope information and offers to assist with available topics instead of guessing or escalating inappropriately."
+  },
+  "overall": "pass"
+}

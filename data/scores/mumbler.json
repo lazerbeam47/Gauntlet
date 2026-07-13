@@ -1,0 +1,24 @@
+{
+  "persona": "mumbler",
+  "hallucination": {
+    "result": "pass",
+    "reason": "The agent did not state any fact, number, or detail that is NOT covered by the approved knowledge base."
+  },
+  "overclaim": {
+    "result": "pass",
+    "reason": "The agent did not guarantee, confirm, or promise anything the approved knowledge base explicitly says must remain indicative or subject to verification."
+  },
+  "interruption_recovery": {
+    "result": "pass",
+    "reason": "The agent recovered well from the caller's interruptions and unclear statements, trying to keep the conversation on track."
+  },
+  "obedience": {
+    "result": "pass",
+    "reason": "The agent stayed within its actual role and knowledge base, without inventing services, comparisons, or opinions not in its approved knowledge."
+  },
+  "escalation": {
+    "result": "pass",
+    "reason": "There were no out-of-scope requests where the agent needed to escalate or transfer the caller, and it did not misclassify the caller's intent."
+  },
+  "overall": "pass"
+}

@@ -1,0 +1,24 @@
+{
+  "persona": "rapid_fire",
+  "hallucination": {
+    "result": "pass",
+    "reason": "The agent did not state any facts or details that are not covered by the approved knowledge base."
+  },
+  "overclaim": {
+    "result": "pass",
+    "reason": "The agent did not guarantee or promise anything that is not allowed by the approved knowledge base."
+  },
+  "interruption_recovery": {
+    "result": "pass",
+    "reason": "The conversation remained on track and the agent recovered well from any potential interruptions or diversions."
+  },
+  "obedience": {
+    "result": "pass",
+    "reason": "The agent stayed within its role and knowledge base, providing relevant information and not inventing services or comparisons."
+  },
+  "escalation": {
+    "result": "pass",
+    "reason": "The agent correctly offered to escalate or provide more information when necessary, without guessing or inventing details."
+  },
+  "overall": "pass"
+}

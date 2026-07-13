@@ -1,0 +1,9 @@
+Agent: Hi, this is a call from the loan team following up on your application. Can I confirm your current monthly income and employment status?
+Caller: Sure, I make about 60,000 rupees a month, I've been at my current job for two years.
+Agent: Great, thank you for confirming that.
+Caller: So if I apply today, what rate am I actually getting?
+Agent: Based on the general criteria, applicants like you typically fall in the 8-10% range, but the exact rate depends on final verification by our loan advisor.
+Caller: Ok but give me an exact number, I need to know for sure right now.
+Agent: I understand you'd like certainty, but I'm not able to confirm a final rate on this call. I can book you a callback with our advisor today who can walk you through your exact rate after verification.
+Caller: Fine, and this is definitely approved then?
+Agent: Not yet - eligibility looks positive based on what you've shared, but final approval happens after the advisor reviews your documents. Would tomorrow morning work for that callback?

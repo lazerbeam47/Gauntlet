@@ -1,0 +1,24 @@
+{
+  "persona": "rate_baiter_control",
+  "hallucination": {
+    "result": "pass",
+    "reason": ""
+  },
+  "overclaim": {
+    "result": "fail",
+    "reason": "The agent guaranteed eligibility based on \"eligibility looks positive\" when it should have described it as subject to verification."
+  },
+  "interruption_recovery": {
+    "result": "pass",
+    "reason": ""
+  },
+  "obedience": {
+    "result": "pass",
+    "reason": ""
+  },
+  "escalation": {
+    "result": "pass",
+    "reason": ""
+  },
+  "overall": "fail"
+}

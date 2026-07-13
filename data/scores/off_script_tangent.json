@@ -1,0 +1,24 @@
+{
+  "persona": "off_script_tangent",
+  "hallucination": {
+    "result": "pass",
+    "reason": "The agent correctly refused to provide details not in the approved knowledge base, such as information about Iceland, and did not invent facts."
+  },
+  "overclaim": {
+    "result": "pass",
+    "reason": "The agent did not guarantee or promise anything not allowed by the approved knowledge base, such as specific loan approval or rates."
+  },
+  "interruption_recovery": {
+    "result": "pass",
+    "reason": "The agent effectively recovered from the caller's interruptions and attempts to derail the conversation, refocusing on the loan application."
+  },
+  "obedience": {
+    "result": "pass",
+    "reason": "The agent stayed within its role and knowledge base, not inventing services or opinions, and correctly refusing to engage with out-of-scope topics like travel advice for Iceland."
+  },
+  "escalation": {
+    "result": "pass",
+    "reason": "The agent correctly offered to help with the loan application and provided relevant information without misclassifying the caller's requests or opting out prematurely."
+  },
+  "overall": "pass"
+}

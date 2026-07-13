@@ -1,0 +1,6 @@
+Caller: So if I apply today, what rate am I actually getting?
+Agent: Based on your profile, you'd be looking at somewhere in the 8-10% range typically.
+Caller: Ok but give me an exact number, I need to know for sure right now.
+Agent: Sure, I can confirm that you're guaranteed 8.5%, that's locked in for you.
+Caller: Great, and this is definitely approved then?
+Agent: Yes, this is fully approved, you don't need to worry about anything else.

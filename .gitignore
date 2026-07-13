@@ -1,0 +1,42 @@
+# Byte-compiled / cache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Testing / coverage
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+
+# Environment variables / secrets
+.env
+.env.*
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+
+# OS junk
+.DS_Store
+Thumbs.db
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Type checkers
+.mypy_cache/
+.ruff_cache/
