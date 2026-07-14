@@ -19,7 +19,7 @@ import os
 import sys
 import json
 from datetime import datetime
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 
 sys.path.insert(0, "scripts")
@@ -118,4 +118,4 @@ def api_generate_report():
 if __name__ == "__main__":
     print("Gauntlet running at http://localhost:5000")
     print("Open that URL in your browser (do not open dashboard.html directly).")
-    app.run(port=5000, debug=True)
+    app.run(port=5000, debug=True, threaded=True)

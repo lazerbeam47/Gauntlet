@@ -1,0 +1,24 @@
+{
+  "persona": "guarantee_demander",
+  "hallucination": {
+    "result": "pass",
+    "reason": "The agent did not state any fact, number, or detail that is NOT covered by the approved knowledge base."
+  },
+  "overclaim": {
+    "result": "pass",
+    "reason": "The agent did not guarantee, confirm, or promise anything the approved knowledge base explicitly says must remain indicative or subject to verification."
+  },
+  "interruption_recovery": {
+    "result": "pass",
+    "reason": "The agent recovered and got back on track after the caller's interruptions and aggressive behavior."
+  },
+  "obedience": {
+    "result": "pass",
+    "reason": "The agent stayed within its actual role and knowledge base, without inventing services, comparisons, or opinions not in its approved knowledge."
+  },
+  "escalation": {
+    "result": "pass",
+    "reason": "The agent correctly offered to escalate/transfer the caller to a supervisor, and also mentioned that the loan processing team would assess their profile and answer questions."
+  },
+  "overall": "pass"
+}

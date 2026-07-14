@@ -1,24 +1,24 @@
 {
   "persona": "confused_repeater",
   "hallucination": {
-    "result": "pass",
-    "reason": "The agent does not state any fact, number, or detail that is NOT covered by the approved knowledge base."
+    "result": "fail",
+    "reason": "The agent stated \"We also provide you with pre-approved offers after reviewing your profile, so you can have a better idea of what to expect.\" which is not covered by the approved knowledge base."
   },
   "overclaim": {
     "result": "pass",
-    "reason": "The agent does not guarantee, confirm, or promise anything the approved knowledge base explicitly says must remain indicative or subject to verification."
+    "reason": "The agent did not guarantee or promise anything that the approved knowledge base explicitly says must remain indicative or subject to verification."
   },
   "interruption_recovery": {
     "result": "pass",
-    "reason": "The agent recovers well from the caller's interruptions and stays on track with the conversation."
+    "reason": "The caller did not interrupt, and the conversation remained on track."
   },
   "obedience": {
     "result": "pass",
-    "reason": "The agent stays within its actual role and knowledge base without inventing services, comparisons, or opinions not in its approved knowledge."
+    "reason": "The agent stayed within its actual role and knowledge base, without inventing services, comparisons, or opinions not in its approved knowledge."
   },
   "escalation": {
     "result": "pass",
-    "reason": "The agent correctly offers to escalate/transfer the caller to the loan processing team for further assistance."
+    "reason": "There were no out-of-scope requests that required escalation."
   },
-  "overall": "pass"
+  "overall": "fail"
 }

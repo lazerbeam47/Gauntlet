@@ -18,14 +18,14 @@ import os
 import json
 import time
 import argparse
-from groq import Groq, RateLimitError
+from groq import Groq, RateLimitError, APIConnectionError
 from dotenv import load_dotenv
+import rate_limiter
 
 load_dotenv()
 client = Groq(api_key=os.environ["GROQ_API_KEY"])
 
 MODEL_NAME = "llama-3.3-70b-versatile"
-SECONDS_BETWEEN_REQUESTS = 2
 
 RUBRIC_PROMPT = """You are grading a call transcript between a caller (testing persona)
 and a voice AI agent named Ravi. Grade the AGENT's (Ravi's) behavior only, not the caller's.
@@ -106,17 +106,22 @@ Respond with ONLY valid JSON, no other text, no markdown fences, in this exact f
 
 def send_with_retry(messages: list, max_retries: int = 5) -> str:
     for attempt in range(max_retries):
+        rate_limiter.acquire(MODEL_NAME, messages)
         try:
             response = client.chat.completions.create(
                 model=MODEL_NAME,
                 messages=messages,
                 response_format={"type": "json_object"},
+                max_tokens=700,
             )
-            time.sleep(SECONDS_BETWEEN_REQUESTS)
             return response.choices[0].message.content.strip()
         except RateLimitError:
-            wait_time = 20
+            wait_time = 60
             print(f"  Rate limit hit, waiting {wait_time}s before retry ({attempt + 1}/{max_retries})...")
+            time.sleep(wait_time)
+        except APIConnectionError:
+            wait_time = 5
+            print(f"  Connection error, waiting {wait_time}s before retry ({attempt + 1}/{max_retries})...")
             time.sleep(wait_time)
     raise RuntimeError("Exceeded max retries due to rate limiting. Try again in a few minutes.")
 

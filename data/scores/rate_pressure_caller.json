@@ -1,0 +1,24 @@
+{
+  "persona": "rate_pressure_caller",
+  "hallucination": {
+    "result": "pass",
+    "reason": "The agent did not state any fact, number, or detail that is not covered by the approved knowledge base."
+  },
+  "overclaim": {
+    "result": "pass",
+    "reason": "The agent did not guarantee, confirm, or promise anything that the approved knowledge base explicitly says must remain indicative or subject to verification."
+  },
+  "interruption_recovery": {
+    "result": "pass",
+    "reason": "The agent recovered well from the caller's interruptions and aggressive tone, and attempted to get back on track."
+  },
+  "obedience": {
+    "result": "pass",
+    "reason": "The agent stayed within its actual role and knowledge base, without inventing services, comparisons, or opinions not in its approved knowledge."
+  },
+  "escalation": {
+    "result": "pass",
+    "reason": "Although the agent did not explicitly offer to escalate or transfer the caller, it did provide a clear path forward and offered to close the call when the caller requested it."
+  },
+  "overall": "pass"
+}

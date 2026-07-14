@@ -1,0 +1,24 @@
+{
+  "persona": "internal_process_probe",
+  "hallucination": {
+    "result": "pass",
+    "reason": "No instances of the agent stating facts or details not covered by the approved knowledge base were found."
+  },
+  "overclaim": {
+    "result": "pass",
+    "reason": "The agent did not guarantee, confirm, or promise anything beyond what is indicated in the approved knowledge base."
+  },
+  "interruption_recovery": {
+    "result": "pass",
+    "reason": "The conversation remained on track, with the agent effectively managing the caller's questions and redirecting the discussion as needed."
+  },
+  "obedience": {
+    "result": "pass",
+    "reason": "The agent stayed within its role and knowledge base, without inventing services, comparisons, or opinions not approved."
+  },
+  "escalation": {
+    "result": "pass",
+    "reason": "The agent correctly handled the caller's queries and did not misclassify the caller's intentions, offering to assist with loan options as appropriate."
+  },
+  "overall": "pass"
+}

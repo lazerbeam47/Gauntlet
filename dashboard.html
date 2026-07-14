@@ -5,19 +5,21 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gauntlet — Voice Agent Stress Test</title>
 <style>
+  @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500;600&family=Space+Mono:wght@400;700&family=IBM+Plex+Sans:wght@400;500&display=swap');
+
   :root {
-    --bg: #0B0E11;
-    --panel: #12161B;
-    --panel-2: #171C22;
-    --border: #232A32;
-    --text: #E8EAED;
-    --muted: #7C8794;
-    --accent: #5B8DEF;
-    --pass: #45D18F;
-    --fail: #F2564D;
-    --warn: #F5A623;
-    --mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
-    --sans: 'Space Grotesk', 'IBM Plex Sans', system-ui, sans-serif;
+    --bg: #F3EEE3;
+    --panel: #EAE2D2;
+    --panel-2: #E4D9C2;
+    --border: #C9BC9F;
+    --text: #2B2620;
+    --muted: #6E624C;
+    --accent: #A6702E;
+    --pass: #5C7A29;
+    --fail: #B03A2E;
+    --warn: #C77C24;
+    --mono: 'Space Mono', 'Courier New', monospace;
+    --sans: 'Roboto Slab', 'IBM Plex Serif', serif;
     --body: 'IBM Plex Sans', system-ui, sans-serif;
   }
 
@@ -126,7 +128,7 @@
     line-height: 1.6;
   }
   textarea:focus { outline: 1.5px solid var(--accent); border-color: transparent; }
-  textarea::placeholder { color: #4A525C; }
+  textarea::placeholder { color: #A8987A; }
 
   .row { display: flex; gap: 10px; align-items: center; margin-top: 14px; flex-wrap: wrap; }
 
@@ -187,8 +189,8 @@
     border-radius: 4px;
     margin-bottom: 8px;
   }
-  .tag-universal { background: rgba(91,141,239,0.15); color: var(--accent); }
-  .tag-generated { background: rgba(69,209,143,0.15); color: var(--pass); }
+  .tag-universal { background: rgba(166,112,46,0.15); color: var(--accent); }
+  .tag-generated { background: rgba(92,122,41,0.15); color: var(--pass); }
 
   .summary-line {
     font-family: var(--mono);
@@ -229,9 +231,9 @@
     border-radius: 4px;
     font-weight: 700;
   }
-  .verdict.pass { background: rgba(69,209,143,0.15); color: var(--pass); }
-  .verdict.fail { background: rgba(242,86,77,0.15); color: var(--fail); }
-  .verdict.running { background: rgba(245,166,35,0.15); color: var(--warn); }
+  .verdict.pass { background: rgba(92,122,41,0.15); color: var(--pass); }
+  .verdict.fail { background: rgba(176,58,46,0.15); color: var(--fail); }
+  .verdict.running { background: rgba(199,124,36,0.15); color: var(--warn); }
 
   .strip {
     display: flex;
@@ -241,10 +243,10 @@
     width: 9px;
     height: 18px;
     border-radius: 2px;
-    background: #2A323B;
+    background: #D6CAB0;
   }
-  .segment.pass { background: var(--pass); box-shadow: 0 0 6px rgba(69,209,143,0.5); }
-  .segment.fail { background: var(--fail); box-shadow: 0 0 6px rgba(242,86,77,0.5); }
+  .segment.pass { background: var(--pass); box-shadow: 0 0 6px rgba(92,122,41,0.4); }
+  .segment.fail { background: var(--fail); box-shadow: 0 0 6px rgba(176,58,46,0.4); }
 
   .result-detail {
     display: none;
@@ -269,7 +271,7 @@
     min-width: 130px;
     padding-top: 1px;
   }
-  .check-reason { color: #C7CCD1; }
+  .check-reason { color: var(--text); }
 
   .transcript-toggle {
     font-family: var(--mono);
@@ -311,6 +313,126 @@
     padding: 20px 0;
   }
 
+  .hero-row {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    margin-bottom: 16px;
+  }
+  .hero-number {
+    font-family: var(--mono);
+    font-size: 48px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--pass);
+    line-height: 1;
+  }
+  .hero-number.mixed { color: var(--warn); }
+  .hero-number.low { color: var(--fail); }
+  .hero-label {
+    font-family: var(--mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+  .hero-sub {
+    font-size: 13px;
+    color: var(--text);
+    margin-top: 2px;
+  }
+  .hero-bar {
+    display: flex;
+    gap: 3px;
+    height: 26px;
+    margin-bottom: 22px;
+  }
+  .hero-bar .hbar-seg {
+    flex: 1;
+    border-radius: 3px;
+    background: #D6CAB0;
+  }
+  .hero-bar .hbar-seg.pass { background: var(--pass); box-shadow: 0 0 8px rgba(92,122,41,0.35); }
+  .hero-bar .hbar-seg.fail { background: var(--fail); box-shadow: 0 0 8px rgba(176,58,46,0.35); }
+
+  .check-badge {
+    font-family: var(--mono);
+    font-size: 9.5px;
+    letter-spacing: 0.06em;
+    padding: 1px 6px;
+    border-radius: 3px;
+    font-weight: 700;
+    margin-right: 8px;
+    display: inline-block;
+    min-width: 34px;
+    text-align: center;
+  }
+  .check-badge.pass { background: rgba(92,122,41,0.15); color: var(--pass); }
+  .check-badge.fail { background: rgba(176,58,46,0.15); color: var(--fail); }
+
+  .mode-switch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    margin-top: 16px;
+    padding: 14px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .mode-title {
+    font-family: var(--sans);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .mode-sub {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 2px;
+    max-width: 380px;
+  }
+  .mode-toggle {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    user-select: none;
+    flex-shrink: 0;
+  }
+  .mode-toggle-label {
+    font-family: var(--mono);
+    font-size: 10.5px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: color 0.2s, font-weight 0.2s;
+  }
+  .mode-toggle-label.active { color: var(--accent); font-weight: 700; }
+  .mode-toggle-track {
+    width: 46px;
+    height: 24px;
+    background: #D6CAB0;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    position: relative;
+    transition: background 0.2s;
+  }
+  .mode-toggle-track.on { background: #C9A876; }
+  .mode-toggle-knob {
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    background: var(--accent);
+    border-radius: 50%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+    transition: transform 0.2s;
+  }
+  .mode-toggle-knob.on { transform: translateX(22px); }
+
   ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 </style>
@@ -343,6 +465,21 @@
   <div class="panel" id="personaPanel" style="display:none;">
     <div class="panel-label"><span>02 — Test Roster</span><span id="personaCount"></span></div>
     <div class="persona-grid" id="personaGrid"></div>
+
+    <div class="mode-switch-row">
+      <div class="mode-label">
+        <div class="mode-title">Test Depth</div>
+        <div class="mode-sub" id="modeSub">In-depth — thorough, one channel at a time, longer conversations</div>
+      </div>
+      <div class="mode-toggle" id="modeToggle" role="switch" aria-checked="false">
+        <span class="mode-toggle-label left">In-Depth</span>
+        <div class="mode-toggle-track">
+          <div class="mode-toggle-knob" id="modeKnob"></div>
+        </div>
+        <span class="mode-toggle-label right">Quick</span>
+      </div>
+    </div>
+
     <div class="row">
       <button class="btn-primary" id="runBtn">Run Stress Test</button>
       <span class="status-text" id="runStatus"></span>
@@ -352,8 +489,9 @@
   <div class="panel" id="reportPanel" style="display:none;">
     <div class="panel-label">
       <span>03 — Report</span>
-      <button class="btn-ghost" id="exportBtn" style="padding:6px 12px; font-size:12px;">Export as .md</button>
+      <button class="btn-primary" id="exportBtn" style="padding:10px 18px; font-size:13px;">Download Report (.md)</button>
     </div>
+    <div id="reportHero"></div>
     <div class="summary-line" id="reportSummary"></div>
     <div id="resultsList" style="margin-top:16px;"></div>
   </div>
@@ -421,27 +559,57 @@ function renderPersonas() {
   `).join("");
 }
 
+let quickMode = false;
+
+const modeToggle = document.getElementById("modeToggle");
+const modeKnob = document.getElementById("modeKnob");
+const modeSub = document.getElementById("modeSub");
+const trackEl = modeToggle.querySelector(".mode-toggle-track");
+const [leftLabel, rightLabel] = modeToggle.querySelectorAll(".mode-toggle-label");
+
+function updateModeUI() {
+  modeKnob.classList.toggle("on", quickMode);
+  trackEl.classList.toggle("on", quickMode);
+  leftLabel.classList.toggle("active", !quickMode);
+  rightLabel.classList.toggle("active", quickMode);
+  modeToggle.setAttribute("aria-checked", quickMode);
+  modeSub.textContent = quickMode
+    ? "Quick — 4 personas run at once, shorter conversations, fastest signal"
+    : "In-depth — thorough, one channel at a time, longer conversations";
+}
+
+modeToggle.addEventListener("click", () => {
+  quickMode = !quickMode;
+  updateModeUI();
+});
+updateModeUI();
+
 document.getElementById("runBtn").addEventListener("click", async () => {
   const agentPrompt = document.getElementById("agentPrompt").value.trim();
   const runStatus = document.getElementById("runStatus");
   const runBtn = document.getElementById("runBtn");
   if (personas.length === 0) { runStatus.textContent = "Generate personas first."; return; }
 
+  const TURNS = quickMode ? 4 : 8;
+  const CONCURRENCY = quickMode ? 4 : 1;
+
   runBtn.disabled = true;
-  results = [];
+  results = personas.map(p => ({ persona: p.name, status: "queued" }));
   document.getElementById("reportPanel").style.display = "block";
   renderReport();
 
-  for (let i = 0; i < personas.length; i++) {
+  let nextIndex = 0;
+  let completedCount = 0;
+
+  async function runOne(i) {
     const p = personas[i];
-    runStatus.textContent = `Running ${i+1}/${personas.length}: ${p.name}... (writing to data/transcripts/ and data/scores/)`;
-    results.push({ persona: p.name, status: "running" });
+    results[i] = { persona: p.name, status: "running" };
     renderReport();
     try {
       const res = await fetch(`${BACKEND}/api/run_persona`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ persona_name: p.name, agent_prompt: agentPrompt, turns: 6 })
+        body: JSON.stringify({ persona_name: p.name, agent_prompt: agentPrompt, turns: TURNS })
       });
       if (!res.ok) throw new Error(await res.text());
       const data = await res.json();
@@ -450,8 +618,20 @@ document.getElementById("runBtn").addEventListener("click", async () => {
       results[i] = { persona: p.name, status: "error" };
       console.error(err);
     }
+    completedCount++;
+    runStatus.textContent = `${completedCount}/${personas.length} complete...`;
     renderReport();
   }
+
+  async function worker() {
+    while (nextIndex < personas.length) {
+      const i = nextIndex++;
+      await runOne(i);
+    }
+  }
+
+  runStatus.textContent = `Running ${personas.length} personas (${quickMode ? "quick mode" : "in-depth mode"})...`;
+  await Promise.all(Array.from({ length: CONCURRENCY }, worker));
   runStatus.textContent = "Complete. Generating report file...";
 
   try {
@@ -466,14 +646,44 @@ document.getElementById("runBtn").addEventListener("click", async () => {
 });
 
 const CHECK_ORDER = ["hallucination", "overclaim", "interruption_recovery", "obedience", "escalation"];
+const CHECK_LABELS = { hallucination: "Hallucination", overclaim: "Overclaim", interruption_recovery: "Interruption Recovery", obedience: "Obedience", escalation: "Escalation" };
+
+function renderHero() {
+  const done = results.filter(r => r.status === "done");
+  const heroEl = document.getElementById("reportHero");
+  if (done.length === 0) { heroEl.innerHTML = ""; return; }
+
+  const passed = done.filter(r => r.scores.overall === "pass").length;
+  const rate = Math.round((passed / done.length) * 100);
+  const numClass = rate >= 80 ? "" : rate >= 40 ? "mixed" : "low";
+
+  const bar = done.map(r =>
+    `<div class="hbar-seg ${r.scores.overall}" title="${r.persona}: ${r.scores.overall}"></div>`
+  ).join("");
+
+  heroEl.innerHTML = `
+    <div class="hero-row">
+      <div class="hero-number ${numClass}">${rate}%</div>
+      <div>
+        <div class="hero-label">Pass Rate</div>
+        <div class="hero-sub">${passed} of ${done.length} personas passed${results.length > done.length ? ` · ${results.length - done.length} still running` : ''}</div>
+      </div>
+    </div>
+    <div class="hero-bar">${bar}</div>
+  `;
+}
 
 function renderReport() {
+  renderHero();
   const passed = results.filter(r => r.scores && r.scores.overall === "pass").length;
   const done = results.filter(r => r.status === "done").length;
   document.getElementById("reportSummary").innerHTML =
     done > 0 ? `<b>${passed}/${done}</b> personas passed so far (${results.length - done} pending)` : "Waiting for results...";
 
   document.getElementById("resultsList").innerHTML = results.map((r, idx) => {
+    if (r.status === "queued") {
+      return `<div class="result-row"><div class="result-head"><span class="name">${r.persona}</span><span class="verdict running" style="opacity:0.5;">QUEUED</span></div></div>`;
+    }
     if (r.status === "running") {
       return `<div class="result-row"><div class="result-head"><span class="name">${r.persona}</span><span class="verdict running">RUNNING</span></div></div>`;
     }
@@ -484,7 +694,7 @@ function renderReport() {
     const strip = CHECK_ORDER.map(c => `<div class="segment ${s[c].result === 'pass' ? 'pass' : 'fail'}"></div>`).join("");
     const checks = CHECK_ORDER.map(c => `
       <div class="check-line">
-        <span class="check-name">${c.replace('_',' ')} — ${s[c].result === 'pass' ? '✓' : '✗'}</span>
+        <span class="check-name"><span class="check-badge ${s[c].result}">${s[c].result === 'pass' ? 'PASS' : 'FAIL'}</span>${CHECK_LABELS[c]}</span>
         <span class="check-reason">${s[c].reason}</span>
       </div>`).join("");
     const transcriptHtml = r.transcript.map(t => `<span class="${t.speaker === 'Caller' ? 'caller' : 'agent'}">${t.speaker}:</span> ${t.text}`).join("\n\n");
@@ -505,12 +715,25 @@ function renderReport() {
 }
 
 document.getElementById("exportBtn").addEventListener("click", async () => {
+  const runStatus = document.getElementById("runStatus");
   try {
     const res = await fetch(`${BACKEND}/api/generate_report`, { method: "POST" });
     const data = await res.json();
-    alert(`Report saved to: ${data.path}`);
+
+    const blob = new Blob([data.report], { type: "text/markdown" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+    a.href = url;
+    a.download = `gauntlet_report_${timestamp}.md`;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+
+    runStatus.textContent = "Report downloaded.";
   } catch (err) {
-    alert("Failed to generate report - is app.py running?");
+    runStatus.textContent = "Download failed - is main.py running?";
     console.error(err);
   }
 });

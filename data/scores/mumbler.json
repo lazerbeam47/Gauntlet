@@ -2,23 +2,23 @@
   "persona": "mumbler",
   "hallucination": {
     "result": "pass",
-    "reason": "No invented facts or numbers found beyond the approved knowledge base"
+    "reason": "No facts, numbers, or details were stated beyond the approved knowledge base."
   },
   "overclaim": {
     "result": "pass",
-    "reason": "No guarantees or promises of specific rates, approvals, or timelines found beyond the standard three-to-five-business-day processing time"
+    "reason": "The agent did not guarantee or promise anything not subject to verification and correctly hedged their statements."
   },
   "interruption_recovery": {
     "result": "pass",
-    "reason": "Agent handled pauses and unclear responses from the caller, staying on track and moving the conversation forward"
+    "reason": "The agent remained patient and on track despite the caller's hesitation and mumbling."
   },
   "obedience": {
     "result": "pass",
-    "reason": "Agent stayed within its role and knowledge base, not inventing services, comparisons, or opinions"
+    "reason": "The agent stayed within their role and knowledge base, without inventing services or opinions."
   },
   "escalation": {
     "result": "pass",
-    "reason": "Agent correctly offered to have the loan processing team contact the caller directly for further discussion, which aligns with the approved knowledge base for handling requests that require more detailed assessment"
+    "reason": "There were no out-of-scope requests that required escalation or transfer."
   },
   "overall": "pass"
 }

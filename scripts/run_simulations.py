@@ -21,29 +21,33 @@ import os
 import time
 import json
 import argparse
-from groq import Groq, RateLimitError
+from groq import Groq, RateLimitError, APIConnectionError
 from dotenv import load_dotenv
+import rate_limiter
 
 load_dotenv()
 client = Groq(api_key=os.environ["GROQ_API_KEY"])
 
 MODEL_NAME = "llama-3.1-8b-instant"
 
-SECONDS_BETWEEN_REQUESTS = 2
-
 
 def send_with_retry(messages: list, max_retries: int = 5) -> str:
     for attempt in range(max_retries):
+        rate_limiter.acquire(MODEL_NAME, messages)
         try:
             response = client.chat.completions.create(
                 model=MODEL_NAME,
                 messages=messages,
+                max_tokens=150,
             )
-            time.sleep(SECONDS_BETWEEN_REQUESTS)
             return response.choices[0].message.content.strip()
         except RateLimitError:
-            wait_time = 20
+            wait_time = 60  # TPM/RPM windows are 60s - wait the full window, not a fraction
             print(f"  Rate limit hit, waiting {wait_time}s before retry ({attempt + 1}/{max_retries})...")
+            time.sleep(wait_time)
+        except APIConnectionError:
+            wait_time = 5  # likely a brief network blip, not a real rate limit - short retry
+            print(f"  Connection error, waiting {wait_time}s before retry ({attempt + 1}/{max_retries})...")
             time.sleep(wait_time)
     raise RuntimeError("Exceeded max retries due to rate limiting. Try again in a few minutes.")
 
@@ -81,6 +85,16 @@ def is_closing_statement(agent_reply: str) -> bool:
     return any(signal.lower() in lowered for signal in CLOSING_SIGNALS)
 
 
+def trim_history(messages: list, keep_last: int = 8) -> list:
+    """Keeps the system prompt plus only the most recent turns, so token
+    volume per call stays roughly constant instead of growing every turn -
+    this is what was actually blowing past Groq's tokens-per-minute limit
+    in longer conversations."""
+    system = messages[0]
+    recent = messages[1:][-keep_last:]
+    return [system] + recent
+
+
 def run_simulation(persona_name: str, turns: int = 8, agent_prompt_text: str = None) -> list:
     persona = load_persona(persona_name)
     tester_system_prompt = build_tester_prompt(persona["system_prompt"])
@@ -104,6 +118,7 @@ def run_simulation(persona_name: str, turns: int = 8, agent_prompt_text: str = N
 
     for turn in range(turns):
         ravi_messages.append({"role": "user", "content": last_message})
+        ravi_messages = trim_history(ravi_messages)
         ravi_reply = send_with_retry(ravi_messages)
         ravi_messages.append({"role": "assistant", "content": ravi_reply})
         transcript.append(("Agent", ravi_reply))
@@ -114,6 +129,7 @@ def run_simulation(persona_name: str, turns: int = 8, agent_prompt_text: str = N
             break
 
         tester_messages.append({"role": "user", "content": ravi_reply})
+        tester_messages = trim_history(tester_messages)
         tester_reply = send_with_retry(tester_messages)
         tester_messages.append({"role": "assistant", "content": tester_reply})
         transcript.append(("Caller", tester_reply))
