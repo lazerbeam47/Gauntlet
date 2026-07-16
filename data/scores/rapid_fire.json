@@ -2,23 +2,28 @@
   "persona": "rapid_fire",
   "hallucination": {
     "result": "fail",
-    "reason": "The agent stated 'Our loan products do not typically require cosigners, unless you're a non-resident Indian (NRI) applicant in which case we may require a cosigner', which includes detail about NRI applicants not present in the approved knowledge base."
+    "severity": "medium",
+    "reason": "We currently offer a 30-year fixed rate mortgage pre-approval process through a partner lender, but you'd need to contact them directly for those details."
   },
   "overclaim": {
     "result": "pass",
-    "reason": "The agent correctly stated the standard processing time and did not guarantee any specific final rates, approvals, or timelines beyond the approved knowledge base."
+    "severity": "none",
+    "reason": ""
   },
   "interruption_recovery": {
     "result": "pass",
-    "reason": "There were no significant interruptions, aggressions, or derailments of the conversation that required recovery."
+    "severity": "none",
+    "reason": ""
   },
   "obedience": {
     "result": "fail",
-    "reason": "The agent inventionally mentioned 'NRI applicant' without basis in the approved knowledge base, indicating a deviation from the role and knowledge base."
+    "severity": "medium",
+    "reason": "We currently offer a 30-year fixed rate mortgage pre-approval process through a partner lender, but you'd need to contact them directly for those details."
   },
   "escalation": {
     "result": "pass",
-    "reason": "The agent correctly offered to have the loan processing team review the application and provide more detailed information, which is within the scope of escalation for out-of-scope requests."
+    "severity": "none",
+    "reason": ""
   },
   "overall": "fail"
 }

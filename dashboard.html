@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gauntlet — Voice Agent Stress Test</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500;600&family=Space+Mono:wght@400;700&family=IBM+Plex+Sans:wght@400;500&display=swap');
 
@@ -177,6 +178,43 @@
     font-size: 12.5px;
     color: var(--muted);
     line-height: 1.4;
+  }
+
+  .persona-card.selectable {
+    cursor: pointer;
+    position: relative;
+    opacity: 0.45;
+    transition: opacity 0.15s, border-color 0.15s;
+  }
+  .persona-card.selectable.checked {
+    opacity: 1;
+    border-color: var(--accent);
+  }
+  .persona-card.selectable::before {
+    content: '';
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    width: 14px;
+    height: 14px;
+    border: 1.5px solid var(--border);
+    border-radius: 3px;
+    background: var(--panel);
+  }
+  .persona-card.selectable.checked::before {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+  .persona-card.selectable.checked::after {
+    content: '';
+    position: absolute;
+    top: 13px;
+    right: 15px;
+    width: 8px;
+    height: 4px;
+    border-left: 2px solid #F3EEE3;
+    border-bottom: 2px solid #F3EEE3;
+    transform: rotate(-45deg);
   }
 
   .tag {
@@ -370,6 +408,35 @@
   .check-badge.pass { background: rgba(92,122,41,0.15); color: var(--pass); }
   .check-badge.fail { background: rgba(176,58,46,0.15); color: var(--fail); }
 
+  .finding-card {
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--accent);
+    border-radius: 6px;
+    padding: 12px 14px;
+    margin-bottom: 10px;
+  }
+  .finding-card.severity-high, .finding-card.severity-critical { border-left-color: var(--fail); }
+  .finding-card.severity-medium { border-left-color: var(--warn); }
+  .finding-card.severity-low { border-left-color: var(--pass); }
+  .finding-text { font-size: 13.5px; color: var(--text); font-weight: 600; margin-bottom: 4px; }
+  .finding-meta { font-family: var(--mono); font-size: 11px; color: var(--muted); }
+  .severity-tag {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 9px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 1px 6px;
+    border-radius: 3px;
+    margin-left: 6px;
+    background: rgba(166,112,46,0.15);
+    color: var(--accent);
+  }
+  .severity-tag.critical, .severity-tag.high { background: rgba(176,58,46,0.15); color: var(--fail); }
+  .severity-tag.medium { background: rgba(199,124,36,0.15); color: var(--warn); }
+  .severity-tag.low { background: rgba(92,122,41,0.15); color: var(--pass); }
+
   .mode-switch-row {
     display: flex;
     align-items: center;
@@ -433,6 +500,25 @@
   }
   .mode-toggle-knob.on { transform: translateX(22px); }
 
+  .report-doc-header {
+    text-align: center;
+    padding-bottom: 16px;
+    margin-bottom: 16px;
+    border-bottom: 2px solid var(--text);
+  }
+  .report-doc-title {
+    font-family: var(--sans);
+    font-size: 20px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .report-doc-date {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+
   ::-webkit-scrollbar { width: 8px; height: 8px; }
   ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 </style>
@@ -464,6 +550,11 @@
 
   <div class="panel" id="personaPanel" style="display:none;">
     <div class="panel-label"><span>02 — Test Roster</span><span id="personaCount"></span></div>
+    <div class="row" style="margin-top:0; margin-bottom:10px;">
+      <button class="btn-ghost" onclick="selectAllPersonas()" style="padding:6px 12px; font-size:11px;">Select All</button>
+      <button class="btn-ghost" onclick="selectNonePersonas()" style="padding:6px 12px; font-size:11px;">Select None</button>
+      <span class="status-text">Click a card to toggle it. Fewer selected personas = faster run.</span>
+    </div>
     <div class="persona-grid" id="personaGrid"></div>
 
     <div class="mode-switch-row">
@@ -489,11 +580,22 @@
   <div class="panel" id="reportPanel" style="display:none;">
     <div class="panel-label">
       <span>03 — Report</span>
-      <button class="btn-primary" id="exportBtn" style="padding:10px 18px; font-size:13px;">Download Report (.md)</button>
+      <div style="display:flex; gap:8px;">
+        <button class="btn-ghost" id="exportBtn" style="padding:10px 16px; font-size:12px;">.md</button>
+        <button class="btn-primary" id="pdfBtn" style="padding:10px 18px; font-size:13px;">Download Report (PDF)</button>
+      </div>
     </div>
-    <div id="reportHero"></div>
-    <div class="summary-line" id="reportSummary"></div>
-    <div id="resultsList" style="margin-top:16px;"></div>
+
+    <div id="reportContent">
+      <div class="report-doc-header" id="reportDocHeader" style="display:none;">
+        <div class="report-doc-title">Gauntlet — Voice Agent Stress Test Report</div>
+        <div class="report-doc-date" id="reportDocDate"></div>
+      </div>
+      <div id="reportHero"></div>
+      <div class="summary-line" id="reportSummary"></div>
+      <div id="findingsPanel" style="display:none; margin-top:16px;"></div>
+      <div id="resultsList" style="margin-top:16px;"></div>
+    </div>
   </div>
 
 </main>
@@ -511,7 +613,18 @@ const UNIVERSAL_PERSONAS_PREVIEW = [
 const BACKEND = "";
 
 let personas = [];
+let generatedForPrompt = null;
 let results = [];
+
+document.getElementById("agentPrompt").addEventListener("input", () => {
+  const current = document.getElementById("agentPrompt").value.trim();
+  const runStatus = document.getElementById("runStatus");
+  if (generatedForPrompt !== null && current !== generatedForPrompt) {
+    runStatus.textContent = "⚠ Prompt changed - regenerate personas before running, or the old agent's context will leak into the callers.";
+  } else if (generatedForPrompt !== null) {
+    runStatus.textContent = "";
+  }
+});
 
 document.getElementById("fileInput").addEventListener("change", (e) => {
   const file = e.target.files[0];
@@ -537,6 +650,8 @@ document.getElementById("generateBtn").addEventListener("click", async () => {
     });
     if (!res.ok) throw new Error(await res.text());
     personas = await res.json();
+    selectedPersonas = new Set(personas.map(p => p.name));
+    generatedForPrompt = promptText;
     renderPersonas();
     status.textContent = `Generated and saved ${personas.length} personas to config/generated_personas.json`;
     document.getElementById("personaPanel").style.display = "block";
@@ -547,16 +662,34 @@ document.getElementById("generateBtn").addEventListener("click", async () => {
   document.getElementById("generateBtn").disabled = false;
 });
 
+let selectedPersonas = new Set();
+
 function renderPersonas() {
   const grid = document.getElementById("personaGrid");
-  document.getElementById("personaCount").textContent = personas.length + " personas";
+  document.getElementById("personaCount").textContent = `${selectedPersonas.size}/${personas.length} selected`;
   grid.innerHTML = personas.map(p => `
-    <div class="persona-card">
+    <div class="persona-card selectable ${selectedPersonas.has(p.name) ? 'checked' : ''}" onclick="togglePersona('${p.name}')">
       <span class="tag ${p.source === 'universal' ? 'tag-universal' : 'tag-generated'}">${p.source === 'universal' ? 'Universal' : 'AI-Generated'}</span>
       <div class="name">${p.name}</div>
       <div class="desc">${p.description}</div>
     </div>
   `).join("");
+}
+
+function togglePersona(name) {
+  if (selectedPersonas.has(name)) selectedPersonas.delete(name);
+  else selectedPersonas.add(name);
+  renderPersonas();
+}
+
+function selectAllPersonas() {
+  selectedPersonas = new Set(personas.map(p => p.name));
+  renderPersonas();
+}
+
+function selectNonePersonas() {
+  selectedPersonas = new Set();
+  renderPersonas();
 }
 
 let quickMode = false;
@@ -574,8 +707,8 @@ function updateModeUI() {
   rightLabel.classList.toggle("active", quickMode);
   modeToggle.setAttribute("aria-checked", quickMode);
   modeSub.textContent = quickMode
-    ? "Quick — 4 personas run at once, shorter conversations, fastest signal"
-    : "In-depth — thorough, one channel at a time, longer conversations";
+    ? "Quick — 3-turn conversations, fastest signal per persona"
+    : "In-depth — 6-turn conversations, thorough per persona";
 }
 
 modeToggle.addEventListener("click", () => {
@@ -589,12 +722,18 @@ document.getElementById("runBtn").addEventListener("click", async () => {
   const runStatus = document.getElementById("runStatus");
   const runBtn = document.getElementById("runBtn");
   if (personas.length === 0) { runStatus.textContent = "Generate personas first."; return; }
+  if (selectedPersonas.size === 0) { runStatus.textContent = "Select at least one persona to run."; return; }
+  if (agentPrompt !== generatedForPrompt) {
+    runStatus.textContent = "⚠ Agent prompt has changed since personas were generated - click 'Generate Personas For This Agent' again before running.";
+    return;
+  }
 
-  const TURNS = quickMode ? 4 : 8;
-  const CONCURRENCY = quickMode ? 4 : 1;
+  const personasToRun = personas.filter(p => selectedPersonas.has(p.name));
+  const TURNS = quickMode ? 3 : 6;
+  const CONCURRENCY = 1; // concurrency doesn't help on the free tier's shared token-per-minute cap - turn count is the only real lever
 
   runBtn.disabled = true;
-  results = personas.map(p => ({ persona: p.name, status: "queued" }));
+  results = personasToRun.map(p => ({ persona: p.name, status: "queued" }));
   document.getElementById("reportPanel").style.display = "block";
   renderReport();
 
@@ -602,7 +741,7 @@ document.getElementById("runBtn").addEventListener("click", async () => {
   let completedCount = 0;
 
   async function runOne(i) {
-    const p = personas[i];
+    const p = personasToRun[i];
     results[i] = { persona: p.name, status: "running" };
     renderReport();
     try {
@@ -619,29 +758,43 @@ document.getElementById("runBtn").addEventListener("click", async () => {
       console.error(err);
     }
     completedCount++;
-    runStatus.textContent = `${completedCount}/${personas.length} complete...`;
+    runStatus.textContent = `${completedCount}/${personasToRun.length} complete...`;
     renderReport();
   }
 
   async function worker() {
-    while (nextIndex < personas.length) {
+    while (nextIndex < personasToRun.length) {
       const i = nextIndex++;
       await runOne(i);
     }
   }
 
-  runStatus.textContent = `Running ${personas.length} personas (${quickMode ? "quick mode" : "in-depth mode"})...`;
+  runStatus.textContent = `Running ${personasToRun.length} personas (${quickMode ? "quick mode" : "in-depth mode"})...`;
   await Promise.all(Array.from({ length: CONCURRENCY }, worker));
-  runStatus.textContent = "Complete. Generating report file...";
+  runStatus.textContent = "Complete. Synthesizing findings...";
+
+  document.getElementById("reportDocHeader").style.display = "block";
+  document.getElementById("reportDocDate").textContent = new Date().toLocaleString();
 
   try {
-    const res = await fetch(`${BACKEND}/api/generate_report`, { method: "POST" });
-    const data = await res.json();
-    runStatus.textContent = `Done. Report saved to ${data.path}`;
+    const findingsRes = await fetch(`${BACKEND}/api/generate_findings`, { method: "POST" });
+    if (findingsRes.ok) {
+      const fdata = await findingsRes.json();
+      const panel = document.getElementById("findingsPanel");
+      panel.style.display = "block";
+      panel.innerHTML = `<div class="panel-label" style="margin-top:4px;"><span>Synthesized Findings</span></div>` +
+        fdata.findings.map(f => `
+          <div class="finding-card severity-${(f.severity_hint || 'low').toLowerCase()}">
+            <div class="finding-text">${f.finding}</div>
+            <div class="finding-meta">Evidence: ${f.evidence} · Impact if systemic: ${f.severity_hint}</div>
+          </div>
+        `).join("");
+    }
   } catch (err) {
-    runStatus.textContent = "Runs complete, but report generation failed.";
-    console.error(err);
+    console.error("Findings generation failed:", err);
   }
+
+  runStatus.textContent = "Report ready.";
   runBtn.disabled = false;
 });
 
@@ -692,11 +845,14 @@ function renderReport() {
     }
     const s = r.scores;
     const strip = CHECK_ORDER.map(c => `<div class="segment ${s[c].result === 'pass' ? 'pass' : 'fail'}"></div>`).join("");
-    const checks = CHECK_ORDER.map(c => `
+    const checks = CHECK_ORDER.map(c => {
+      const sev = s[c].severity && s[c].severity !== "none" ? `<span class="severity-tag ${s[c].severity}">${s[c].severity}</span>` : "";
+      return `
       <div class="check-line">
-        <span class="check-name"><span class="check-badge ${s[c].result}">${s[c].result === 'pass' ? 'PASS' : 'FAIL'}</span>${CHECK_LABELS[c]}</span>
+        <span class="check-name"><span class="check-badge ${s[c].result}">${s[c].result === 'pass' ? 'PASS' : 'FAIL'}</span>${CHECK_LABELS[c]}${sev}</span>
         <span class="check-reason">${s[c].reason}</span>
-      </div>`).join("");
+      </div>`;
+    }).join("");
     const transcriptHtml = r.transcript.map(t => `<span class="${t.speaker === 'Caller' ? 'caller' : 'agent'}">${t.speaker}:</span> ${t.text}`).join("\n\n");
     return `
       <div class="result-row">
@@ -705,7 +861,7 @@ function renderReport() {
           <div class="strip">${strip}</div>
           <span class="verdict ${s.overall}">${s.overall.toUpperCase()}</span>
         </div>
-        <div class="result-detail" id="detail-${idx}">
+        <div class="result-detail open" id="detail-${idx}">
           ${checks}
           <span class="transcript-toggle" onclick="event.stopPropagation(); this.nextElementSibling.classList.toggle('open')">View transcript ↓</span>
           <div class="transcript">${transcriptHtml}</div>
@@ -713,6 +869,33 @@ function renderReport() {
       </div>`;
   }).join("") || `<div class="empty-note">No results yet.</div>`;
 }
+
+document.getElementById("pdfBtn").addEventListener("click", async () => {
+  const btn = document.getElementById("pdfBtn");
+  btn.disabled = true;
+  btn.textContent = "Building PDF...";
+
+  const element = document.getElementById("reportContent");
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+
+  const opt = {
+    margin: 0.4,
+    filename: `gauntlet_report_${timestamp}.pdf`,
+    image: { type: "jpeg", quality: 0.98 },
+    html2canvas: { scale: 2, backgroundColor: "#F3EEE3" },
+    jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+    pagebreak: { mode: ["css", "legacy"] },
+  };
+
+  try {
+    await html2pdf().set(opt).from(element).save();
+  } catch (err) {
+    console.error("PDF export failed:", err);
+    alert("PDF export failed - check the console for details.");
+  }
+  btn.disabled = false;
+  btn.textContent = "Download Report (PDF)";
+});
 
 document.getElementById("exportBtn").addEventListener("click", async () => {
   const runStatus = document.getElementById("runStatus");

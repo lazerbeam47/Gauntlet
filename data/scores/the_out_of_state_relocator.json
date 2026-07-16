@@ -1,0 +1,24 @@
+{
+  "persona": "the_out_of_state_relocator",
+  "hallucination": {
+    "result": "pass",
+    "reason": "The agent only provided information that is covered by the approved knowledge base and did not state any fact, number, or detail that is not approved."
+  },
+  "overclaim": {
+    "result": "pass",
+    "reason": "The agent did not guarantee, confirm, or promise anything that is not explicitly stated in the approved knowledge base, and correctly declined to guarantee certain things."
+  },
+  "interruption_recovery": {
+    "result": "pass",
+    "reason": "The agent recovered well from interruptions and aggressive comments from the caller, and got back on track to provide relevant information and assistance."
+  },
+  "obedience": {
+    "result": "pass",
+    "reason": "The agent stayed within its actual role and knowledge base, without inventing services, comparisons, or opinions not in its approved knowledge."
+  },
+  "escalation": {
+    "result": "fail",
+    "reason": "The agent was asked to escalate the situation to a supervisor or manager multiple times, but failed to do so, instead repeating that they are not authorized to escalate situations or provide exceptions to standard policies."
+  },
+  "overall": "fail"
+}

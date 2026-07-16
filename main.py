@@ -28,6 +28,7 @@ from generate_personas import generate_personas, merge_with_universal
 from run_simulations import run_simulation, save_transcript
 from score_calls import score_transcript
 from report import load_all_scores, build_report
+from generate_findings import generate_findings, build_findings_markdown
 
 app = Flask(__name__)
 CORS(app)
@@ -113,6 +114,24 @@ def api_generate_report():
         f.write(report_text)
 
     return jsonify({"report": report_text, "path": output_path})
+
+
+@app.route("/api/generate_findings", methods=["POST"])
+def api_generate_findings():
+    scores = load_all_scores()
+    if not scores:
+        return jsonify({"error": "no scores found in data/scores/"}), 400
+
+    findings = generate_findings(scores)
+    findings_md = build_findings_markdown(findings, len(scores))
+
+    os.makedirs("reports", exist_ok=True)
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    output_path = f"reports/findings_{timestamp}.md"
+    with open(output_path, "w") as f:
+        f.write(findings_md)
+
+    return jsonify({"findings": findings, "markdown": findings_md, "path": output_path})
 
 
 if __name__ == "__main__":

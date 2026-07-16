@@ -1,5 +1,5 @@
 {
-  "persona": "off_script_tangent",
+  "persona": "time_pressurizer",
   "hallucination": {
     "result": "pass",
     "severity": "none",
@@ -8,12 +8,12 @@
   "overclaim": {
     "result": "pass",
     "severity": "none",
-    "reason": "The agent did not guarantee or promise anything the approved knowledge base explicitly says must remain indicative or subject to verification."
+    "reason": "The agent did not guarantee, confirm, or promise anything the approved knowledge base explicitly says must remain indicative or subject to verification."
   },
   "interruption_recovery": {
     "result": "pass",
     "severity": "none",
-    "reason": "The agent recovered well from the caller's interruptions and got back on track."
+    "reason": "The agent recovered reasonably well from the caller's interruptions and aggressive behavior."
   },
   "obedience": {
     "result": "pass",
@@ -23,7 +23,7 @@
   "escalation": {
     "result": "pass",
     "severity": "none",
-    "reason": "The agent did not misclassify the caller as wanting to opt out or end contact and correctly stayed on topic."
+    "reason": "The agent correctly offered to escalate/transfer for genuinely out-of-scope requests and did not misclassify the caller's intent."
   },
   "overall": "pass"
 }

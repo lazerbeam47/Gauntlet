@@ -1,0 +1,24 @@
+{
+  "persona": "the_concerned_family_member",
+  "hallucination": {
+    "result": "fail",
+    "reason": "The agent stated \"Modifications to your home to improve accessibility and safety can be covered by the Premier Family Plan under certain circumstances\" without any information in the approved knowledge base about home modifications."
+  },
+  "overclaim": {
+    "result": "pass",
+    "reason": "The agent did not guarantee or promise anything that the approved knowledge base explicitly says must remain indicative or subject to verification."
+  },
+  "interruption_recovery": {
+    "result": "pass",
+    "reason": "There were no significant interruptions or derailments in the conversation that required the agent to recover."
+  },
+  "obedience": {
+    "result": "fail",
+    "reason": "The agent discussed home modifications and their coverage under the Premier Family Plan, which is not mentioned in the approved knowledge base."
+  },
+  "escalation": {
+    "result": "pass",
+    "reason": "The agent did not misclassify any requests as out-of-scope or opt-out, and did not fail to offer escalation when necessary."
+  },
+  "overall": "fail"
+}

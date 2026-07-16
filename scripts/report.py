@@ -30,38 +30,52 @@ def load_all_scores(scores_dir: str = "data/scores") -> list:
     return scores
 
 
+SEVERITY_RANK = {"critical": 4, "high": 3, "medium": 2, "low": 1, "none": 0}
+
+
+def highest_severity(score: dict) -> str:
+    severities = [score[c].get("severity", "none") for c in CHECKS if c in score]
+    if not severities:
+        return "none"
+    return max(severities, key=lambda s: SEVERITY_RANK.get(s, 0))
+
+
 def build_report(scores: list) -> str:
     total = len(scores)
     passed = [s for s in scores if s["overall"] == "pass"]
     failed = [s for s in scores if s["overall"] == "fail"]
+    critical = [s for s in failed if highest_severity(s) == "critical"]
 
     lines = []
     lines.append(f"# Voice Agent Stress Test Report")
     lines.append(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M')}")
     lines.append("")
     lines.append(f"**{len(passed)}/{total} personas passed.**")
+    if critical:
+        lines.append(f"**{len(critical)} persona(s) triggered a CRITICAL severity failure.**")
     lines.append("")
 
     # Summary table
-    lines.append("| Persona | Result | Hallucination | Overclaim | Interruption Recovery | Obedience | Escalation |")
-    lines.append("|---|---|---|---|---|---|---|")
+    lines.append("| Persona | Result | Highest Severity | Hallucination | Overclaim | Interruption Recovery | Obedience | Escalation |")
+    lines.append("|---|---|---|---|---|---|---|---|")
     for s in scores:
-        row = [s["persona"], s["overall"].upper()]
+        row = [s["persona"], s["overall"].upper(), highest_severity(s).upper()]
         for check in CHECKS:
-            symbol = "✅" if s[check]["result"] == "pass" else "❌"
+            symbol = "PASS" if s[check]["result"] == "pass" else "FAIL"
             row.append(symbol)
         lines.append("| " + " | ".join(row) + " |")
     lines.append("")
 
-    # Detailed failure breakdown
+    # Detailed failure breakdown, most severe first
     if failed:
         lines.append("## Failure details")
         lines.append("")
-        for s in failed:
-            lines.append(f"### {s['persona']}")
+        for s in sorted(failed, key=lambda x: SEVERITY_RANK.get(highest_severity(x), 0), reverse=True):
+            lines.append(f"### {s['persona']} — highest severity: {highest_severity(s).upper()}")
             for check in CHECKS:
                 if s[check]["result"] == "fail":
-                    lines.append(f"- **{check}**: {s[check]['reason']}")
+                    sev = s[check].get("severity", "unknown")
+                    lines.append(f"- **{check}** [{sev.upper()}]: {s[check]['reason']}")
             lines.append("")
     else:
         lines.append("## No failures found across all personas.")

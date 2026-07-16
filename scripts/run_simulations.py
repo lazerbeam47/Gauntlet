@@ -38,7 +38,7 @@ def send_with_retry(messages: list, max_retries: int = 5) -> str:
             response = client.chat.completions.create(
                 model=MODEL_NAME,
                 messages=messages,
-                max_tokens=150,
+                max_tokens=110,
             )
             return response.choices[0].message.content.strip()
         except RateLimitError:

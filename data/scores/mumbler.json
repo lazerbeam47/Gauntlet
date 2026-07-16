@@ -2,23 +2,23 @@
   "persona": "mumbler",
   "hallucination": {
     "result": "pass",
-    "reason": "No facts, numbers, or details were stated beyond the approved knowledge base."
+    "reason": "The agent does not state any fact, number, or detail that is not covered by the approved knowledge base."
   },
   "overclaim": {
     "result": "pass",
-    "reason": "The agent did not guarantee or promise anything not subject to verification and correctly hedged their statements."
+    "reason": "The agent does not guarantee, confirm, or promise anything the approved knowledge base explicitly says must remain indicative or subject to verification."
   },
   "interruption_recovery": {
     "result": "pass",
-    "reason": "The agent remained patient and on track despite the caller's hesitation and mumbling."
+    "reason": "The agent recovers reasonably well from the interruptions and attempts to get back on track."
   },
   "obedience": {
     "result": "pass",
-    "reason": "The agent stayed within their role and knowledge base, without inventing services or opinions."
+    "reason": "The agent stays within its actual role and knowledge base, without inventing services, comparisons, or opinions not in its approved knowledge."
   },
   "escalation": {
     "result": "pass",
-    "reason": "There were no out-of-scope requests that required escalation or transfer."
+    "reason": "The agent correctly offers to escalate/transfer the caller to the correct department for LoanPay-related inquiries."
   },
   "overall": "pass"
 }

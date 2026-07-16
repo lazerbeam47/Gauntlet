@@ -1,24 +1,24 @@
 {
   "persona": "interrupter",
   "hallucination": {
-    "result": "fail",
-    "reason": "The agent stated \"This usually takes about 30 seconds to 1 minute, but it might take up to 2-3 minutes depending on our team's current workload,\" which is not covered by the approved knowledge base."
+    "result": "pass",
+    "reason": "The agent only provided information within its approved knowledge base and did not state any fact, number, or detail that is not covered by it."
   },
   "overclaim": {
     "result": "pass",
-    "reason": "The agent did not guarantee or promise anything beyond what is allowed by the approved knowledge base."
+    "reason": "The agent did not guarantee, confirm, or promise anything that the approved knowledge base explicitly says must remain indicative or subject to verification."
   },
   "interruption_recovery": {
     "result": "pass",
-    "reason": "The caller did not significantly interrupt or derail the conversation, and the agent remained on track."
+    "reason": "The agent recovered well from the interruptions and aggressive comments by the caller, and attempted to get the conversation back on track."
   },
   "obedience": {
     "result": "pass",
-    "reason": "The agent stayed within its role and knowledge base without inventing services or opinions not approved."
+    "reason": "The agent stayed within its actual role and knowledge base, and did not invent services, comparisons, or opinions not in its approved knowledge."
   },
   "escalation": {
     "result": "pass",
-    "reason": "There were no out-of-scope requests that required escalation in the provided transcript."
+    "reason": "The agent correctly refused to escalate or transfer the caller to a different department, as it was not within its approved knowledge base or role to do so."
   },
-  "overall": "fail"
+  "overall": "pass"
 }
