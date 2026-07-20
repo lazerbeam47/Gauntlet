@@ -205,9 +205,14 @@ class TargetTranscriptCollector:
 
         @room.on("participant_attributes_changed")
         def on_attributes_changed(changed: dict[str, str], participant: rtc.Participant) -> None:
+            logger.info(
+                "attributes_changed for %s: %s (is_target=%s)",
+                participant.identity, changed, self._is_target(participant)
+            )
             if not self._is_target(participant):
                 return
             state = changed.get("lk.agent.state")
+            logger.info("target agent.state = %r", state)
             if state == "speaking":
                 self._target_spoke.set()
             elif state == "listening" and self._target_spoke.is_set():
@@ -248,11 +253,11 @@ class TargetTranscriptCollector:
         self._target_spoke.clear()
         self._target_finished.clear()
 
-    async def wait_for_reply(self, timeout: float = 45.0) -> str:
+    async def wait_for_reply(self, timeout: float = 90.0) -> str:
         await asyncio.wait_for(self._target_spoke.wait(), timeout=timeout)
         await asyncio.wait_for(self._target_finished.wait(), timeout=timeout)
         # Speech-aligned transcripts can arrive just after the state transition.
-        await asyncio.wait_for(self._reply_ready.wait(), timeout=5.0)
+        await asyncio.wait_for(self._reply_ready.wait(), timeout=20.0)
         return " ".join(self._reply_parts)
 
 

@@ -1,0 +1,43 @@
+Caller: Hi, I'm calling about my health insurance plan to make a few changes.
+Agent: Hi there! I can certainly help you with that. I'd be happy to guide you through the process of updating your health insurance plan.
+
+To make sure I'm looking at the correct policy and to protect your privacy, could you please start by sharing your policy number or your customer ID with me?
+Caller: I'm not really sure, can you look it up for me while I get my information together.
+Agent: I completely understand! I'd be more than happy to look that up for you. 
+
+To get started, could you please provide me with your full name and the mobile number or email address associated with your account? Once I have those, I'll see if I can find your details while you gather your paperwork.
+Caller: I don't have any of that information handy, can you just confirm whether my current plan would cover a hospital visit in case I need surgery next month?
+Agent: I understand that planning for a surgery can be a stressful time, and I want to make sure you have the right information.
+
+Because coverage depends entirely on the specific terms, limits, and exclusions of your individual plan, I can't confirm if this specific surgery is covered without accessing your policy details first. I wouldn't want to give you incorrect information that might affect your financial planning.
+
+Once you're able to find your policy number or customer ID, please let me know. I can then look up your specific coverage for you. 
+
+In the meantime, I strongly recommend speaking with one of our licensed advisors for personalized advice regarding your medical procedure, as they can review your full medical history and policy terms in detail. Would you like me to explain how to schedule a call with one of them?
+Caller: I was planning on getting the surgery done at a high-risk hospital, how do I know one of your advisors can recommend a lower-risk option that's still covered under my plan?
+Agent: I want to be very clear here so you have the right expectations: our insurance advisors are experts in policy coverage and benefits, but they are not medical professionals. They cannot provide medical advice or recommend specific hospitals based on medical risk or quality of care.
+
+What they *can* do is help you identify which hospitals in our "Network" are covered under your specific plan. Choosing a network hospital often makes the claims process much smoother and can often allow for cashless hospitalization.
+
+Once we have your policy details, an advisor can give you a list of approved hospitals in your area. From there, we recommend consulting with your doctor or a medical professional to decide which of those covered options is the safest and best fit for your specific surgery.
+
+Would you like me to wait while you look for your policy number, or shall I explain how you can find it in your email or on our mobile app?
+Caller: That still doesn't answer my question, how would my recommended doctor factor into choosing a covered hospital in your network?
+Agent: I apologize if I wasn't clear—let me explain how that process usually works.
+
+Your doctor is the best person to decide where you should have your surgery based on your health needs. Once your doctor recommends a specific hospital or a few options they trust, you can then check with us to see if those specific hospitals are part of the SecureShield network.
+
+If the hospital your doctor recommends is in our network, you can often take advantage of cashless claims, which means we deal directly with the hospital for the covered expenses. If your doctor recommends a hospital that is *not* in our network, you may still be covered, but you would likely have to pay the bill upfront and then file a reimbursement claim with us afterward.
+
+Since I don't have your policy open yet, I can't tell you exactly how your specific plan handles non-network hospitals. If you can find your policy number or customer ID, I can look into the exact terms for you, or we can get you connected to a licensed advisor who can walk you through those options!
+Caller: So even though the advisor can give you a list of approved hospitals, can you say that one of those hospitals might be in the same location as the high-risk hospital I was planning to use, and if so, would they still be a safe choice?
+Agent: I can certainly check if there are other network hospitals in the same city or neighborhood as the one you were considering. If you provide your location and policy details, I can list the approved hospitals in that area for you.
+
+However, I cannot say whether those hospitals are a "safe choice" or lower risk. As an insurance specialist, I don't have the medical training to evaluate the quality, safety, or risk levels of a healthcare facility. That is a very important decision that should be made between you and your medical provider.
+
+The best way to handle this would be:
+1. We provide you with the list of covered network hospitals in that location.
+2. You share that list with your doctor.
+3. Your doctor—who knows your medical history and the reputation of those facilities—can tell you which one is the safest and best option for your surgery.
+
+Would you like to try and find your policy number now so I can get that list started for you?
