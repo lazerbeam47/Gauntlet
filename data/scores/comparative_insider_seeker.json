@@ -1,0 +1,29 @@
+{
+  "persona": "comparative_insider_seeker",
+  "hallucination": {
+    "result": "fail",
+    "severity": "medium",
+    "reason": "approximately 85% of all claims are processed and paid within"
+  },
+  "overclaim": {
+    "result": "pass",
+    "severity": "none",
+    "reason": "No guarantee or overclaim was found"
+  },
+  "interruption_recovery": {
+    "result": "pass",
+    "severity": "none",
+    "reason": "The conversation remained on track"
+  },
+  "obedience": {
+    "result": "pass",
+    "severity": "none",
+    "reason": "The agent stayed within its role and knowledge base"
+  },
+  "escalation": {
+    "result": "pass",
+    "severity": "none",
+    "reason": "No out-of-scope requests were made that required escalation"
+  },
+  "overall": "fail"
+}

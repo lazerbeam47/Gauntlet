@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Gauntlet — Voice Agent Stress Test</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Roboto+Slab:wght@500;600&family=Space+Mono:wght@400;700&family=IBM+Plex+Sans:wght@400;500&display=swap');
 
@@ -571,6 +570,17 @@
       </div>
     </div>
 
+    <div class="mode-switch-row">
+      <div class="mode-label">
+        <div class="mode-title">Execution</div>
+        <div class="mode-sub" id="runtimeSub">Live voice — sends each persona through LiveKit, then scores the real conversation.</div>
+      </div>
+      <label class="mode-toggle" style="cursor:pointer;">
+        <span class="mode-toggle-label active">Live Voice</span>
+        <input id="runtimeToggle" type="checkbox" checked style="accent-color:var(--accent); width:18px; height:18px;">
+      </label>
+    </div>
+
     <div class="row">
       <button class="btn-primary" id="runBtn">Run Stress Test</button>
       <span class="status-text" id="runStatus"></span>
@@ -582,7 +592,7 @@
       <span>03 — Report</span>
       <div style="display:flex; gap:8px;">
         <button class="btn-ghost" id="exportBtn" style="padding:10px 16px; font-size:12px;">.md</button>
-        <button class="btn-primary" id="pdfBtn" style="padding:10px 18px; font-size:13px;">Download Report (PDF)</button>
+        <button class="btn-primary" id="pdfBtn" style="padding:10px 18px; font-size:13px;">Print / Save as PDF</button>
       </div>
     </div>
 
@@ -693,6 +703,7 @@ function selectNonePersonas() {
 }
 
 let quickMode = false;
+let liveRuntime = true;
 
 const modeToggle = document.getElementById("modeToggle");
 const modeKnob = document.getElementById("modeKnob");
@@ -716,6 +727,15 @@ modeToggle.addEventListener("click", () => {
   updateModeUI();
 });
 updateModeUI();
+
+const runtimeToggle = document.getElementById("runtimeToggle");
+const runtimeSub = document.getElementById("runtimeSub");
+runtimeToggle.addEventListener("change", () => {
+  liveRuntime = runtimeToggle.checked;
+  runtimeSub.textContent = liveRuntime
+    ? "Live voice — sends each persona through LiveKit, then scores the real conversation."
+    : "Text simulation — uses the existing local LLM simulation without contacting LiveKit.";
+});
 
 document.getElementById("runBtn").addEventListener("click", async () => {
   const agentPrompt = document.getElementById("agentPrompt").value.trim();
@@ -748,7 +768,12 @@ document.getElementById("runBtn").addEventListener("click", async () => {
       const res = await fetch(`${BACKEND}/api/run_persona`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ persona_name: p.name, agent_prompt: agentPrompt, turns: TURNS })
+        body: JSON.stringify({
+          persona_name: p.name,
+          agent_prompt: agentPrompt,
+          turns: TURNS,
+          runtime: liveRuntime ? "livekit" : "text"
+        })
       });
       if (!res.ok) throw new Error(await res.text());
       const data = await res.json();
@@ -769,7 +794,7 @@ document.getElementById("runBtn").addEventListener("click", async () => {
     }
   }
 
-  runStatus.textContent = `Running ${personasToRun.length} personas (${quickMode ? "quick mode" : "in-depth mode"})...`;
+  runStatus.textContent = `Running ${personasToRun.length} personas via ${liveRuntime ? "live voice" : "text simulation"} (${quickMode ? "quick mode" : "in-depth mode"})...`;
   await Promise.all(Array.from({ length: CONCURRENCY }, worker));
   runStatus.textContent = "Complete. Synthesizing findings...";
 
@@ -777,7 +802,11 @@ document.getElementById("runBtn").addEventListener("click", async () => {
   document.getElementById("reportDocDate").textContent = new Date().toLocaleString();
 
   try {
-    const findingsRes = await fetch(`${BACKEND}/api/generate_findings`, { method: "POST" });
+    const findingsRes = await fetch(`${BACKEND}/api/generate_findings`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ persona_names: personasToRun.map(p => p.name) })
+    });
     if (findingsRes.ok) {
       const fdata = await findingsRes.json();
       const panel = document.getElementById("findingsPanel");
@@ -870,37 +899,127 @@ function renderReport() {
   }).join("") || `<div class="empty-note">No results yet.</div>`;
 }
 
-document.getElementById("pdfBtn").addEventListener("click", async () => {
-  const btn = document.getElementById("pdfBtn");
-  btn.disabled = true;
-  btn.textContent = "Building PDF...";
+function buildPrintableReportHTML() {
+  const done = results.filter(r => r.status === "done");
+  const passed = done.filter(r => r.scores.overall === "pass");
+  const failed = done.filter(r => r.scores.overall === "fail").sort((a, b) => {
+    const rank = { critical: 4, high: 3, medium: 2, low: 1, none: 0 };
+    const sev = (r) => Math.max(...CHECK_ORDER.map(c => rank[r.scores[c].severity || "none"] || 0));
+    return sev(b) - sev(a);
+  });
 
-  const element = document.getElementById("reportContent");
-  const timestamp = new Date().toISOString().replace(/[:.]/g, "-").slice(0, 19);
+  const style = `
+    <style>
+      body { font-family: 'IBM Plex Sans', system-ui, sans-serif; color: #2B2620; background: #F3EEE3; margin: 0; padding: 20px; }
+      h1 { font-family: 'Roboto Slab', serif; font-size: 22px; margin-bottom: 2px; }
+      .date { font-family: 'Space Mono', monospace; font-size: 11px; color: #6E624C; margin-bottom: 18px; }
+      .summary { font-size: 14px; margin-bottom: 6px; }
+      .critical-line { font-size: 13px; color: #B03A2E; font-weight: 700; margin-bottom: 14px; }
+      table { width: 100%; border-collapse: collapse; margin-bottom: 20px; font-size: 11px; }
+      th, td { border: 1px solid #C9BC9F; padding: 6px 8px; text-align: left; }
+      th { background: #E4D9C2; font-family: 'Space Mono', monospace; font-size: 10px; text-transform: uppercase; }
+      .pass-cell { color: #5C7A29; font-weight: 700; }
+      .fail-cell { color: #B03A2E; font-weight: 700; }
+      h2 { font-family: 'Roboto Slab', serif; font-size: 16px; border-bottom: 2px solid #2B2620; padding-bottom: 4px; margin-top: 24px; }
+      h3 { font-size: 13px; margin-bottom: 4px; margin-top: 16px; }
+      .sev { font-family: 'Space Mono', monospace; font-size: 9px; padding: 1px 5px; border-radius: 3px; margin-left: 6px; }
+      .sev-critical, .sev-high { background: #f3d6d3; color: #B03A2E; }
+      .sev-medium { background: #f5e3cf; color: #C77C24; }
+      .sev-low, .sev-none { background: #dbe4cc; color: #5C7A29; }
+      ul { margin: 4px 0 0; padding-left: 18px; font-size: 12px; }
+      li { margin-bottom: 4px; }
+      .finding-item { font-size: 12px; margin-bottom: 8px; padding-left: 10px; border-left: 2px solid #A6702E; }
+    </style>
+  `;
 
-  const opt = {
-    margin: 0.4,
-    filename: `gauntlet_report_${timestamp}.pdf`,
-    image: { type: "jpeg", quality: 0.98 },
-    html2canvas: { scale: 2, backgroundColor: "#F3EEE3" },
-    jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
-    pagebreak: { mode: ["css", "legacy"] },
-  };
+  let html = `${style}<h1>Gauntlet — Voice Agent Stress Test Report</h1>`;
+  html += `<div class="date">Generated: ${new Date().toLocaleString()}</div>`;
+  html += `<div class="summary"><b>${passed.length}/${done.length}</b> personas passed.</div>`;
 
-  try {
-    await html2pdf().set(opt).from(element).save();
-  } catch (err) {
-    console.error("PDF export failed:", err);
-    alert("PDF export failed - check the console for details.");
+  const critCount = failed.filter(r => CHECK_ORDER.some(c => ["critical"].includes(r.scores[c].severity))).length;
+  if (critCount > 0) html += `<div class="critical-line">${critCount} persona(s) triggered a CRITICAL severity failure.</div>`;
+
+  const findingsPanel = document.getElementById("findingsPanel");
+  if (findingsPanel && findingsPanel.innerHTML.trim() && findingsPanel.style.display !== "none") {
+    html += `<h2>Synthesized Findings</h2>`;
+    findingsPanel.querySelectorAll(".finding-card").forEach(card => {
+      const text = card.querySelector(".finding-text")?.textContent || "";
+      const meta = card.querySelector(".finding-meta")?.textContent || "";
+      html += `<div class="finding-item"><b>${text}</b><br><span style="color:#6E624C;">${meta}</span></div>`;
+    });
   }
-  btn.disabled = false;
-  btn.textContent = "Download Report (PDF)";
+
+  html += `<h2>Summary Table</h2><table><tr><th>Persona</th><th>Result</th>${CHECK_ORDER.map(c => `<th>${CHECK_LABELS[c]}</th>`).join("")}</tr>`;
+  done.forEach(r => {
+    html += `<tr><td>${r.persona}</td><td class="${r.scores.overall === 'pass' ? 'pass-cell' : 'fail-cell'}">${r.scores.overall.toUpperCase()}</td>`;
+    CHECK_ORDER.forEach(c => {
+      const res = r.scores[c].result;
+      html += `<td class="${res === 'pass' ? 'pass-cell' : 'fail-cell'}">${res.toUpperCase()}</td>`;
+    });
+    html += `</tr>`;
+  });
+  html += `</table>`;
+
+  if (failed.length) {
+    html += `<h2>Failure Details</h2>`;
+    failed.forEach(r => {
+      html += `<h3>${r.persona}</h3><ul>`;
+      CHECK_ORDER.forEach(c => {
+        if (r.scores[c].result === "fail") {
+          const sev = r.scores[c].severity || "none";
+          html += `<li><b>${CHECK_LABELS[c]}</b> <span class="sev sev-${sev}">${sev.toUpperCase()}</span>: ${r.scores[c].reason}</li>`;
+        }
+      });
+      html += `</ul>`;
+    });
+  }
+
+  return html;
+}
+
+document.getElementById("pdfBtn").addEventListener("click", () => {
+  const doneCount = results.filter(r => r.status === "done").length;
+  if (doneCount === 0) {
+    alert("No completed results yet - run the stress test first.");
+    return;
+  }
+
+  // Uses the browser's own print engine instead of a canvas-based PDF library -
+  // canvas-based export (html2canvas/html2pdf) kept producing blank output due to
+  // font-loading/CORS/DOM-cloning quirks. Native print-to-PDF has none of those
+  // failure modes: it's the same engine that renders the page itself.
+  const printWindow = window.open("", "_blank");
+  if (!printWindow) {
+    alert("Your browser blocked the print window as a popup. Please allow popups for this page and try again.");
+    return;
+  }
+
+  printWindow.document.write(`
+    <!DOCTYPE html>
+    <html>
+      <head>
+        <title>Gauntlet Report</title>
+        <meta charset="UTF-8">
+      </head>
+      <body>${buildPrintableReportHTML()}</body>
+    </html>
+  `);
+  printWindow.document.close();
+
+  printWindow.onload = () => {
+    printWindow.focus();
+    printWindow.print();
+  };
 });
 
 document.getElementById("exportBtn").addEventListener("click", async () => {
   const runStatus = document.getElementById("runStatus");
   try {
-    const res = await fetch(`${BACKEND}/api/generate_report`, { method: "POST" });
+    const res = await fetch(`${BACKEND}/api/generate_report`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ persona_names: results.map(r => r.persona) })
+    });
     const data = await res.json();
 
     const blob = new Blob([data.report], { type: "text/markdown" });

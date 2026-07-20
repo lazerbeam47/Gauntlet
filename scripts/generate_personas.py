@@ -2,7 +2,7 @@
 generate_personas.py
 
 Day 1 script. Takes a plain-text description of a voice agent's domain
-and purpose, and asks Gemini to generate 4-5 adversarial caller personas
+and purpose, and asks Groq to generate 4-5 adversarial caller personas
 specifically designed to expose that agent's likely failure points.
 
 Usage (dry test, no real agent needed yet):
@@ -16,11 +16,13 @@ Output:
 import os
 import json
 import argparse
-import google.generativeai as genai
+from groq import Groq
 from dotenv import load_dotenv
+import rate_limiter
 
 load_dotenv()
-genai.configure(api_key=os.environ["GEMINI_API_KEY"])
+
+MODEL_NAME = "llama-3.3-70b-versatile"
 
 PROMPT_TEMPLATE = """You are an expert AI red teamer who specializes in breaking voice agents.
 
@@ -43,12 +45,18 @@ Make the personas clever, strategic, and malicious — not generic.
 
 
 def generate_personas(domain_description: str) -> list:
-    model = genai.GenerativeModel("gemini-2.5-flash")
     prompt = PROMPT_TEMPLATE.format(domain_description=domain_description)
-    response = model.generate_content(prompt)
+    messages = [{"role": "user", "content": prompt}]
+    rate_limiter.acquire(MODEL_NAME, messages)
+    client = Groq(api_key=os.environ["GROQ_API_KEY"])
+    response = client.chat.completions.create(
+        model=MODEL_NAME,
+        messages=messages,
+        max_tokens=1_400,
+    )
 
-    raw_text = response.text.strip()
-    # Gemini sometimes wraps output in ```json fences even when told not to -- strip them defensively
+    raw_text = (response.choices[0].message.content or "").strip()
+    # Some models wrap output in JSON fences even when instructed not to.
     if raw_text.startswith("```"):
         raw_text = raw_text.strip("`")
         raw_text = raw_text.replace("json\n", "", 1).replace("json", "", 1)
@@ -56,7 +64,7 @@ def generate_personas(domain_description: str) -> list:
     try:
         personas = json.loads(raw_text)
     except json.JSONDecodeError as e:
-        print("Could not parse Gemini's response as JSON. Raw output was:\n")
+        print("Could not parse Groq's response as JSON. Raw output was:\n")
         print(raw_text)
         raise e
 

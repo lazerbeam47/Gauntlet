@@ -22,7 +22,7 @@ import os
 import json
 import argparse
 import time
-from run_simulations import run_simulation, save_transcript
+from run_simulations import run_livekit_simulation, run_simulation, save_transcript
 
 
 def load_all_personas(personas_path: str = "config/generated_personas.json") -> list:
@@ -37,6 +37,9 @@ if __name__ == "__main__":
         "--personas_path",
         default="config/generated_personas.json",
         help="Path to the personas file to loop through",
+    )
+    parser.add_argument(
+        "--runtime", choices=("text", "livekit"), default="text", help="Simulation transport"
     )
     args = parser.parse_args()
 
@@ -54,7 +57,8 @@ if __name__ == "__main__":
         print(f"{'#'*60}\n")
 
         try:
-            transcript = run_simulation(name, args.turns)
+            runner = run_livekit_simulation if args.runtime == "livekit" else run_simulation
+            transcript = runner(name, args.turns)
             output_path = save_transcript(transcript, name)
             print(f"Saved: {output_path}")
             completed.append(name)

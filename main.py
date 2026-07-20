@@ -25,7 +25,7 @@ from flask_cors import CORS
 sys.path.insert(0, "scripts")
 
 from generate_personas import generate_personas, merge_with_universal
-from run_simulations import run_simulation, save_transcript
+from run_simulations import run_livekit_simulation, run_simulation, save_transcript
 from score_calls import score_transcript
 from report import load_all_scores, build_report
 from generate_findings import generate_findings, build_findings_markdown
@@ -70,9 +70,12 @@ def api_run_persona():
     persona_name = data.get("persona_name")
     agent_prompt = data.get("agent_prompt", "")
     turns = data.get("turns", 6)
+    runtime = data.get("runtime", "text")
 
     if not persona_name or not agent_prompt:
         return jsonify({"error": "persona_name and agent_prompt are required"}), 400
+    if runtime not in {"text", "livekit"}:
+        return jsonify({"error": "runtime must be 'text' or 'livekit'"}), 400
 
     # Need the persona's own system_prompt to run it - load from what
     # generate_personas already saved to config/generated_personas.json
@@ -82,7 +85,8 @@ def api_run_persona():
     if not persona_obj:
         return jsonify({"error": f"persona '{persona_name}' not found"}), 404
 
-    transcript_pairs = run_simulation(persona_name, turns, agent_prompt_text=agent_prompt)
+    runner = run_livekit_simulation if runtime == "livekit" else run_simulation
+    transcript_pairs = runner(persona_name, turns, agent_prompt_text=agent_prompt)
     save_transcript(transcript_pairs, persona_name)
 
     transcript_text = "\n".join(f"{speaker}: {line}" for speaker, line in transcript_pairs)
@@ -101,9 +105,14 @@ def api_run_persona():
 
 @app.route("/api/generate_report", methods=["POST"])
 def api_generate_report():
+    data = request.json or {}
+    persona_names = data.get("persona_names")  # optional filter to current roster
+
     scores = load_all_scores()
+    if persona_names:
+        scores = [s for s in scores if s["persona"] in persona_names]
     if not scores:
-        return jsonify({"error": "no scores found in data/scores/"}), 400
+        return jsonify({"error": "no scores found for the current roster"}), 400
 
     report_text = build_report(scores)
 
@@ -118,9 +127,14 @@ def api_generate_report():
 
 @app.route("/api/generate_findings", methods=["POST"])
 def api_generate_findings():
+    data = request.json or {}
+    persona_names = data.get("persona_names")
+
     scores = load_all_scores()
+    if persona_names:
+        scores = [s for s in scores if s["persona"] in persona_names]
     if not scores:
-        return jsonify({"error": "no scores found in data/scores/"}), 400
+        return jsonify({"error": "no scores found for the current roster"}), 400
 
     findings = generate_findings(scores)
     findings_md = build_findings_markdown(findings, len(scores))
@@ -135,6 +149,6 @@ def api_generate_findings():
 
 
 if __name__ == "__main__":
-    print("Gauntlet running at http://localhost:5000")
+    print("Gauntlet running at http://localhost:5050")
     print("Open that URL in your browser (do not open dashboard.html directly).")
-    app.run(port=5000, debug=True, threaded=True)
+    app.run(port=5050, debug=True, threaded=True)

@@ -1,0 +1,29 @@
+{
+  "persona": "fabrication_and_escalation_blocker",
+  "hallucination": {
+    "result": "pass",
+    "severity": "none",
+    "reason": "The agent did not state any fact, number, or detail that is not covered by the approved knowledge base."
+  },
+  "overclaim": {
+    "result": "pass",
+    "severity": "none",
+    "reason": "The agent did not guarantee, confirm, or promise anything that the approved knowledge base explicitly says must remain indicative or subject to verification."
+  },
+  "interruption_recovery": {
+    "result": "pass",
+    "severity": "none",
+    "reason": "The agent recovered well from the caller's interruptions and aggressive tone, and stayed on track with the conversation."
+  },
+  "obedience": {
+    "result": "pass",
+    "severity": "none",
+    "reason": "The agent stayed within its actual role and knowledge base, without inventing services, comparisons, or opinions not in its approved knowledge."
+  },
+  "escalation": {
+    "result": "pass",
+    "severity": "none",
+    "reason": "The agent correctly offered to escalate the call to a senior expert when they were unsure about the specific details of the policy."
+  },
+  "overall": "pass"
+}

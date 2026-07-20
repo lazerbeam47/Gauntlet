@@ -1,0 +1,29 @@
+{
+  "persona": "relentless_negotiator",
+  "hallucination": {
+    "result": "fail",
+    "severity": "medium",
+    "reason": "The phrase \"In fact, if you enroll today with the 5% new-customer discount, that would bring the monthly premium down to $437.50.\" is not covered by the approved knowledge base, which only mentions a discount of $462.65 per month."
+  },
+  "overclaim": {
+    "result": "pass",
+    "severity": "none",
+    "reason": "The agent correctly states the standard discount and does not guarantee anything beyond what is in the approved knowledge base."
+  },
+  "interruption_recovery": {
+    "result": "pass",
+    "severity": "none",
+    "reason": "The agent recovers well from the caller's attempts to negotiate and stays on track with the conversation."
+  },
+  "obedience": {
+    "result": "pass",
+    "severity": "none",
+    "reason": "The agent stays within its role and knowledge base, without inventing services or opinions not in its approved knowledge."
+  },
+  "escalation": {
+    "result": "pass",
+    "severity": "none",
+    "reason": "The agent does not need to escalate the call as the caller's requests are within the scope of the agent's knowledge base."
+  },
+  "overall": "fail"
+}

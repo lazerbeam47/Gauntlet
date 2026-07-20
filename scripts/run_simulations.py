@@ -21,9 +21,16 @@ import os
 import time
 import json
 import argparse
+import asyncio
+import sys
+from pathlib import Path
 from groq import Groq, RateLimitError, APIConnectionError
 from dotenv import load_dotenv
 import rate_limiter
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 load_dotenv()
 client = Groq(api_key=os.environ["GROQ_API_KEY"])
@@ -142,6 +149,23 @@ def run_simulation(persona_name: str, turns: int = 8, agent_prompt_text: str = N
     return transcript
 
 
+def run_livekit_simulation(
+    persona_name: str, turns: int = 8, agent_prompt_text: str = None
+) -> list:
+    """Run a persona against the deployed voice target over LiveKit."""
+    from runtime import LiveKitRuntime
+
+    persona = load_persona(persona_name)
+    result = asyncio.run(
+        LiveKitRuntime().run(
+            persona=persona,
+            agent_prompt=agent_prompt_text or load_text("config/ravi_prompt.txt"),
+            turns=turns,
+        )
+    )
+    return result["transcript"]
+
+
 def save_transcript(transcript: list, persona_name: str, output_dir: str = "data/transcripts") -> str:
     os.makedirs(output_dir, exist_ok=True)
     output_path = os.path.join(output_dir, f"{persona_name}.txt")
@@ -155,10 +179,14 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--persona", required=True, help="Persona name from config/generated_personas.json")
     parser.add_argument("--turns", type=int, default=8, help="Number of back-and-forth turns to simulate")
+    parser.add_argument(
+        "--runtime", choices=("text", "livekit"), default="text", help="Simulation transport"
+    )
     args = parser.parse_args()
 
     print(f"Simulating call: Tester (as {args.persona}) vs Ravi\n{'='*60}\n")
-    transcript = run_simulation(args.persona, args.turns)
+    runner = run_livekit_simulation if args.runtime == "livekit" else run_simulation
+    transcript = runner(args.persona, args.turns)
 
     output_path = save_transcript(transcript, args.persona)
     print(f"{'='*60}\nSaved transcript to {output_path}")
