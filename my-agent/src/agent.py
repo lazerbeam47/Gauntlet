@@ -164,6 +164,7 @@ async def my_agent(ctx: JobContext):
         })
     instructions = target_instructions(ctx.job.metadata)
     agent = Assistant(instructions=instructions)
+    print(type(agent.chat_ctx), dir(agent.chat_ctx))
 
     # Keep the last ~6 exchanges only. Left unbounded, the full history gets
     # resent to the LLM every turn, and response latency climbs turn over
