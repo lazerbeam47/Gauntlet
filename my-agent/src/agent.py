@@ -1,7 +1,7 @@
 import logging
 import json
 import textwrap
-
+import asyncio
 from dotenv import load_dotenv
 from livekit import rtc
 from livekit.agents import (
@@ -162,9 +162,36 @@ async def my_agent(ctx: JobContext):
             "kind": participant.kind,
             "attributes": dict(participant.attributes),
         })
+    instructions = target_instructions(ctx.job.metadata)
+    agent = Assistant(instructions=instructions)
+
+    # Keep the last ~6 exchanges only. Left unbounded, the full history gets
+    # resent to the LLM every turn, and response latency climbs turn over
+    # turn until it crosses the caller's wait timeout - this is what was
+    # actually causing later turns to time out, not a missed event.
+    MAX_HISTORY_ITEMS = 12
+
+    session = AgentSession(
+        stt=inference.STT(model="deepgram/nova-3", language="multi"),
+        tts=inference.TTS(
+            model="cartesia/sonic-3", voice="9626c31c-bec5-4cca-baa8-f8ba9e84c8bc"
+        ),
+        turn_handling=TurnHandlingOptions(
+            turn_detection=inference.TurnDetector(),
+        ),
+        preemptive_generation=True,
+    )
+
+    @session.on("conversation_item_added")
+    def on_item_added(event):
+        items = agent.chat_ctx.items
+        if len(items) > MAX_HISTORY_ITEMS:
+            trimmed = agent.chat_ctx.copy()
+            trimmed.items = trimmed.items[-MAX_HISTORY_ITEMS:]
+            asyncio.create_task(agent.update_chat_ctx(trimmed))
     # Start the session, which initializes the voice pipeline and warms up the models
     await session.start(
-        agent=Assistant(instructions=instructions),
+        agent=agent,
         room=ctx.room,
         room_options=room_io.RoomOptions(
             # The Gauntlet caller is a dispatched programmatic participant,
