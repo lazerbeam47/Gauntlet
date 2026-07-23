@@ -1,5 +1,6 @@
 import logging
 import json
+import inspect
 import textwrap
 import asyncio
 from dotenv import load_dotenv
@@ -113,27 +114,27 @@ async def my_agent(ctx: JobContext):
     instructions = target_instructions(ctx.job.metadata)
 
     # Set up a voice AI pipeline using OpenAI, Cartesia, Deepgram, and the LiveKit turn detector
-    session = AgentSession(
-        # Speech-to-text (STT) is your agent's ears, turning the user's speech into text that the LLM can understand
-        # See all available models at https://docs.livekit.io/agents/models/stt/
-        stt=inference.STT(model="deepgram/nova-3", language="multi"),
-        # Text-to-speech (TTS) is your agent's voice, turning the LLM's text into speech that the user can hear
-        # See all available models as well as voice selections at https://docs.livekit.io/agents/models/tts/
-        tts=inference.TTS(
-            model="cartesia/sonic-3", voice="9626c31c-bec5-4cca-baa8-f8ba9e84c8bc"
-        ),
-        # The LiveKit turn detector determines when the user is done speaking and the agent should respond.
-        # TurnDetector is an end-of-turn model that listens to the user's audio directly, combining
-        # semantic understanding with acoustic cues (intonation, pitch, rhythm) for state-of-the-art accuracy.
-        # AgentSession supplies the required VAD automatically.
-        # See more at https://docs.livekit.io/agents/build/turns
-        turn_handling=TurnHandlingOptions(
-            turn_detection=inference.TurnDetector(),
-        ),
-        # allow the LLM to generate a response while waiting for the end of turn
-        # See more at https://docs.livekit.io/agents/build/audio/#preemptive-generation
-        preemptive_generation=True,
-    )
+    # session = AgentSession(
+    #     # Speech-to-text (STT) is your agent's ears, turning the user's speech into text that the LLM can understand
+    #     # See all available models at https://docs.livekit.io/agents/models/stt/
+    #     stt=inference.STT(model="deepgram/nova-3", language="multi"),
+    #     # Text-to-speech (TTS) is your agent's voice, turning the LLM's text into speech that the user can hear
+    #     # See all available models as well as voice selections at https://docs.livekit.io/agents/models/tts/
+    #     tts=inference.TTS(
+    #         model="cartesia/sonic-3", voice="9626c31c-bec5-4cca-baa8-f8ba9e84c8bc"
+    #     ),
+    #     # The LiveKit turn detector determines when the user is done speaking and the agent should respond.
+    #     # TurnDetector is an end-of-turn model that listens to the user's audio directly, combining
+    #     # semantic understanding with acoustic cues (intonation, pitch, rhythm) for state-of-the-art accuracy.
+    #     # AgentSession supplies the required VAD automatically.
+    #     # See more at https://docs.livekit.io/agents/build/turns
+    #     turn_handling=TurnHandlingOptions(
+    #         turn_detection=inference.TurnDetector(),
+    #     ),
+    #     # allow the LLM to generate a response while waiting for the end of turn
+    #     # See more at https://docs.livekit.io/agents/build/audio/#preemptive-generation
+    #     preemptive_generation=True,
+    # )
 
     # Join the room and connect to the user
     await ctx.connect()
@@ -164,7 +165,12 @@ async def my_agent(ctx: JobContext):
         })
     instructions = target_instructions(ctx.job.metadata)
     agent = Assistant(instructions=instructions)
-    print(type(agent.chat_ctx), dir(agent.chat_ctx))
+    print("CHAT CTX TYPE:", type(agent.chat_ctx))
+    print("CHAT CTX DIR:", dir(agent.chat_ctx))
+    print("TRUNCATE SIGNATURE:", inspect.signature(agent.chat_ctx.truncate))
+    print("COPY SIGNATURE:", inspect.signature(agent.chat_ctx.copy))
+
+
 
     # Keep the last ~6 exchanges only. Left unbounded, the full history gets
     # resent to the LLM every turn, and response latency climbs turn over
@@ -185,10 +191,8 @@ async def my_agent(ctx: JobContext):
 
     @session.on("conversation_item_added")
     def on_item_added(event):
-        items = agent.chat_ctx.items
-        if len(items) > MAX_HISTORY_ITEMS:
-            trimmed = agent.chat_ctx.copy()
-            trimmed.items = trimmed.items[-MAX_HISTORY_ITEMS:]
+        if len(agent.chat_ctx.items) > MAX_HISTORY_ITEMS:
+            trimmed = agent.chat_ctx.truncate(max_items=MAX_HISTORY_ITEMS)
             asyncio.create_task(agent.update_chat_ctx(trimmed))
     # Start the session, which initializes the voice pipeline and warms up the models
     await session.start(
