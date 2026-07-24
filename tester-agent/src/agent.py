@@ -253,7 +253,7 @@ class TargetTranscriptCollector:
         self._target_spoke.clear()
         self._target_finished.clear()
 
-    async def wait_for_reply(self, timeout: float = 45.0) -> str:
+    async def wait_for_reply(self, timeout: float = 90.0) -> str:
         await asyncio.wait_for(self._target_spoke.wait(), timeout=timeout)
         await asyncio.wait_for(self._target_finished.wait(), timeout=timeout)
         # Speech-aligned transcripts can arrive just after the state transition.

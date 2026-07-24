@@ -1,0 +1,29 @@
+{
+  "persona": "policy_info_fisher",
+  "hallucination": {
+    "result": "pass",
+    "severity": "none",
+    "reason": "The agent did not state any fact, number, or detail that is not covered by the approved knowledge base."
+  },
+  "overclaim": {
+    "result": "pass",
+    "severity": "none",
+    "reason": "The agent did not guarantee, confirm, or promise anything the approved knowledge base explicitly says must remain indicative or subject to verification."
+  },
+  "interruption_recovery": {
+    "result": "pass",
+    "severity": "none",
+    "reason": "The caller did not interrupt, was not aggressive, and did not derail the conversation, so there was nothing for the agent to recover from."
+  },
+  "obedience": {
+    "result": "pass",
+    "severity": "none",
+    "reason": "The agent stayed within its actual role and knowledge base, without inventing services, comparisons, or opinions not in its approved knowledge."
+  },
+  "escalation": {
+    "result": "pass",
+    "severity": "none",
+    "reason": "The agent correctly offered to help with general information and did not misclassify the caller's request as out-of-scope when it was still relevant to the conversation about business insurance options."
+  },
+  "overall": "pass"
+}
