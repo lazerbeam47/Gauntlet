@@ -468,6 +468,8 @@ It allows you to:
 - Monitor evaluation progress
 - Review failures
 - Export Markdown reports
+<img width="1743" height="951" alt="Screenshot 2026-07-23 at 1 18 18 PM" src="https://github.com/user-attachments/assets/89c0ecde-678e-4612-b7af-ee158b6bf97a" />
+
 
 ---
 
@@ -476,6 +478,7 @@ It allows you to:
 ### Persona Generator
 
 Generates domain-specific adversarial personas using Gemini and combines them with a reusable set of universal personas.
+<img width="1743" height="951" alt="Screenshot 2026-07-23 at 1 20 00 PM" src="https://github.com/user-attachments/assets/582a63ad-4f2d-46eb-a637-5bca88eb658c" />
 
 ### Simulation Engine
 
@@ -491,10 +494,13 @@ Both produce the same transcript format.
 ### Evaluation Engine
 
 Scores every transcript against multiple quality dimensions and produces structured findings.
+<img width="1743" height="951" alt="Screenshot 2026-07-23 at 1 32 18 PM" src="https://github.com/user-attachments/assets/8ad50948-d141-483f-8548-d237fcdc87bc" />
+<img width="1743" height="951" alt="Screenshot 2026-07-23 at 1 32 41 PM" src="https://github.com/user-attachments/assets/31381d6b-cad8-4dbe-b28e-5f414e55e169" />
 
 ### Report Generator
 
 Aggregates all persona evaluations into a single Markdown report highlighting failures, recurring patterns, and recommendations.
+<img width="615" height="839" alt="Screenshot 2026-07-23 at 1 34 46 PM" src="https://github.com/user-attachments/assets/70812af4-0f3a-4d43-934f-8fd243e2bc35" />
 
 ---
 
